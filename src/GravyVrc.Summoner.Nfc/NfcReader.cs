@@ -21,13 +21,13 @@ internal class NfcReader : IDisposable, INfcReader
     }
 
     public delegate void CardEventHandler();
-    public event CardEventHandler CardInserted;
-    public event CardEventHandler CardEjected;
-    public event CardEventHandler DeviceDisconnected;
-    private BackgroundWorker _worker;
+    public event CardEventHandler? CardInserted;
+    public event CardEventHandler? CardEjected;
+    public event CardEventHandler? DeviceDisconnected;
+    private BackgroundWorker? _worker;
     private Card.SCARD_READERSTATE RdrState;
     private string readername;
-    private Card.SCARD_READERSTATE[] states;
+    private Card.SCARD_READERSTATE[]? states;
     private void WaitChangeStatus(object sender, DoWorkEventArgs e)
     {
         while (!e.Cancel)
@@ -209,15 +209,17 @@ internal class NfcReader : IDisposable, INfcReader
 
     public string GetCardUID()
     {
-        string cardUID = "";
         byte[] receivedUID = new byte[256];
-        Card.SCARD_IO_REQUEST request = new Card.SCARD_IO_REQUEST();
-        request.dwProtocol = Card.SCARD_PROTOCOL_T1;
-        request.cbPciLength = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Card.SCARD_IO_REQUEST));
+        var request = new Card.SCARD_IO_REQUEST
+        {
+            dwProtocol = Card.SCARD_PROTOCOL_T1,
+            cbPciLength = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Card.SCARD_IO_REQUEST))
+        };
         byte[] sendBytes = new byte[] { 0xFF, 0xCA, 0x00, 0x00, 0x00 };
         int outBytes = receivedUID.Length;
         int status = Card.SCardTransmit(hCard, ref request, ref sendBytes[0], sendBytes.Length, ref request, ref receivedUID[0], ref outBytes);
 
+        string cardUID;
         if (status != Card.SCARD_S_SUCCESS)
             cardUID = "";
         else
@@ -227,10 +229,8 @@ internal class NfcReader : IDisposable, INfcReader
 
     public List<string> GetReadersList()
     {
-        string ReaderList = "" + Convert.ToChar(0);
         int indx;
         int pcchReaders = 0;
-        string rName = "";
         List<string> lstReaders = new List<string>();
         //Establish Context
         retCode = Card.SCardEstablishContext(Card.SCARD_SCOPE_USER, 0, 0, ref hContext);
@@ -259,7 +259,7 @@ internal class NfcReader : IDisposable, INfcReader
             throw new Exception("Error SCardListReaders");
         }
 
-        rName = "";
+        string rName = "";
         indx = 0;
 
 
@@ -383,7 +383,7 @@ internal class NfcReader : IDisposable, INfcReader
             SendBuffer[i] = buff[i];
         }
         SendLength = 5;
-        ReceiveLength = SendBuffer[SendBuffer.Length - 1] + 2;
+        ReceiveLength = SendBuffer[^1] + 2;
 
         retCode = SendAPDUandDisplay(2);
 
@@ -391,7 +391,7 @@ internal class NfcReader : IDisposable, INfcReader
         // Display data in text format
         for (indx = 0; indx <= ReceiveLength - 1; indx++)
         {
-            tmpStr = tmpStr + Convert.ToChar(ReceiveBuffer[indx]);
+            tmpStr += Convert.ToChar(ReceiveBuffer[indx]);
         }
 
         return tmpStr;
@@ -414,9 +414,6 @@ internal class NfcReader : IDisposable, INfcReader
         _worker.WorkerSupportsCancellation = true;
         _worker.DoWork += WaitChangeStatus;
         _worker.RunWorkerAsync();
-    }
-    public NfcReader()
-    {
     }
 
     public void Dispose()

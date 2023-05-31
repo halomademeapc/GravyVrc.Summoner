@@ -11,8 +11,9 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
-        ViewModel.PropertyChanged += OnViewModelChange;
+        ViewModel.PropertyChanged += (_, _) => OnViewModelChange();
         _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
+        OnViewModelChange();
     }
 
     void OnNfcTagScanned(ParameterAssignmentBase parameter)
@@ -40,13 +41,20 @@ public partial class MainPage : ContentPage
     {
         if (ViewModel.IsValid)
         {
-            SetVrcParameter(ViewModel);
+            SetVrcParameter(ViewModel.GetAssignment());
         }
     }
 
-    void OnViewModelChange(object sender, EventArgs args)
+    void OnViewModelChange()
     {
         SubmitButton.IsEnabled = ViewModel.IsValid;
+        FloatInputLayout.IsVisible = ViewModel.Type == ParameterType.Float;
+        IntInputLayout.IsVisible = ViewModel.Type == ParameterType.Int;
+        BoolInputLayout.IsVisible = ViewModel.Type == ParameterType.Bool;
+    }
+
+    private void OnDebugClicked(object sender, EventArgs e)
+    {
+        //throw new NotImplementedException();
     }
 }
-

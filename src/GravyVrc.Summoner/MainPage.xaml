@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GravyVrc.Summoner"
@@ -24,32 +25,76 @@
             <Label
                 Text="Scan an NFC tag or set the value manually"
                 SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
+                FontSize="26" />
 
-            <Label
-                Text="Parameter Name" />
-            <Entry x:Name="ParameterNameEntry"
-                Placeholder="GravyVrc.Summoner:Value"
-                Text="{Binding Name, Mode=TwoWay}"
-                ClearButtonVisibility="WhileEditing"
-                ReturnType="Next"
-                IsTextPredictionEnabled="false" />
+            <VerticalStackLayout>
+                <Label
+                    Text="Parameter Name"
+                    Margin="0,0,0,8" />
+                <Entry x:Name="ParameterNameEntry"
+                       Placeholder="GravyVrc.Summoner:Value"
+                       Text="{Binding Name, Mode=TwoWay}"
+                       ClearButtonVisibility="WhileEditing"
+                       ReturnType="Next"
+                       IsTextPredictionEnabled="false" />
+            </VerticalStackLayout>
 
-            <Label
-                Text="Parameter Value" />
-            <Entry x:Name="ParameterValueEntry"
-                Placeholder="0"
-                Keyboard="Numeric"
-                Text="{Binding Value, Mode=TwoWay}"
-                ClearButtonVisibility="WhileEditing"
-                ReturnType="Next"
-                IsTextPredictionEnabled="false" />
+            <Picker x:Name="ParameterTypePicker"
+                    Title="Parameter Type"
+                    SelectedItem="{Binding Type}">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type local:ParameterType}">
+                        <local:ParameterType>Int</local:ParameterType>
+                        <local:ParameterType>Float</local:ParameterType>
+                        <local:ParameterType>Bool</local:ParameterType>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
 
+            <VerticalStackLayout>
+                <Label
+                    Text="Parameter Value"
+                    Margin="0,0,0,8" />
+                <HorizontalStackLayout x:Name="IntInputLayout"
+                                       Spacing="8">
+                    <Entry x:Name="ParameterIntValueEntry"
+                           Placeholder="0"
+                           Keyboard="Numeric"
+                           Text="{Binding IntValue, Mode=TwoWay}"
+                           ClearButtonVisibility="WhileEditing"
+                           ReturnType="Next"
+                           IsTextPredictionEnabled="false" />
+                    <Stepper Value="{Binding IntValue, Mode=TwoWay}"
+                             Minimum="{Binding Source={x:Static x:Int32.MinValue}}"
+                             Maximum="{Binding Source={x:Static x:Int32.MaxValue}}" />
+                </HorizontalStackLayout>
 
-            <Button x:Name="SubmitButton"
-                Text="Set Value"
-                Clicked="OnButtonClicked" />
+                <HorizontalStackLayout x:Name="FloatInputLayout">
+                    <Entry x:Name="ParameterFloatValueEntry"
+                           Placeholder="0"
+                           Keyboard="Numeric"
+                           Text="{Binding FloatValue, Mode=TwoWay}"
+                           ClearButtonVisibility="WhileEditing"
+                           ReturnType="Next"
+                           IsTextPredictionEnabled="false" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout x:Name="BoolInputLayout"
+                                       RadioButtonGroup.GroupName="ParameterBoolValueRadioGroup"
+                                       RadioButtonGroup.SelectedValue="{Binding BoolValue}">
+                    <RadioButton Value="False" Content="false" />
+                    <RadioButton Value="True" Content="true" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <HorizontalStackLayout Spacing="12">
+                <Button x:Name="WriteButton"
+                        Text="Write Tag"
+                        Clicked="OnDebugClicked" />
+                <Button x:Name="SubmitButton"
+                        Text="Set Value"
+                        Clicked="OnButtonClicked" />
+            </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

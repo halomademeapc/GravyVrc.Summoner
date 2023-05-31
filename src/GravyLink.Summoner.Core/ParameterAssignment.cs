@@ -1,45 +1,12 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿namespace GravyVrc.Summoner.Core;
 
-namespace GravyVrc.Summoner.Core;
-
-public class ParameterAssignment<T> : ParameterAssignmentBase, INotifyPropertyChanged where T : struct, IComparable, IComparable<T>, IEquatable<T>
+public class ParameterAssignment<T> : ParameterAssignmentBase where T : struct, IComparable, IComparable<T>, IEquatable<T>
 {
-    private string _name = "GravyVrc.Summoner:Value";
-    private T _value;
+    public override required string Name { get; set; }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public override string Name
-    {
-        get => _name;
-        set
-        {
-            if (value != _name)
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    public T Value
-    {
-        get => _value;
-        set
-        {
-            if (!value.Equals(_value))
-            {
-                _value = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    public T Value { get; set; }
 
     public override object ObjectValue => Value;
-
-    public void OnPropertyChanged([CallerMemberName] string name = "") =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     public bool IsValid => !string.IsNullOrWhiteSpace(Name);
 }
