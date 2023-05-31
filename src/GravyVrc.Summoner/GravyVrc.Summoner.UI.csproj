@@ -53,4 +53,9 @@
 		<PackageReference Include="VRCOscLib" Version="1.4.3" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\GravyLink.Summoner.Core\GravyLink.Summoner.Core.csproj" />
+	  <ProjectReference Include="..\GravyVrc.Summoner.Nfc\GravyVrc.Summoner.Nfc.csproj" />
+	</ItemGroup>
+
 </Project>

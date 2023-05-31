@@ -5,7 +5,7 @@
              x:Class="GravyVrc.Summoner.MainPage">
 
     <ContentPage.BindingContext>
-        <local:ParameterAssignmentViewModel x:Name="ViewModel" />
+        <local:ParameterViewModel x:Name="ViewModel" />
     </ContentPage.BindingContext>
 
 
@@ -22,7 +22,7 @@
                 HorizontalOptions="Center" />
 
             <Label
-                Text="Hello, World!"
+                Text="Scan an NFC tag or set the value manually"
                 SemanticProperties.HeadingLevel="Level1"
                 FontSize="32"
                 HorizontalOptions="Center" />
