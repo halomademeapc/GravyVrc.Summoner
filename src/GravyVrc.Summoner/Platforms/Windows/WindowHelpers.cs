@@ -1,13 +1,17 @@
-﻿using Microsoft.UI.Composition;
+﻿using Windows.Graphics;
+using Microsoft.UI;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using WinRT;
+using Window = Microsoft.UI.Xaml.Window;
 
 namespace GravyVrc.Summoner.Platforms.Windows;
 
 public static class WindowHelpers
 {
-    public static void TryMicaOrAcrylic(this Microsoft.UI.Xaml.Window window)
+    public static void TryMicaOrAcrylic(this Window window)
     {
         var dispatcherQueueHelper = new WindowsSystemDispatcherQueueHelper(); // in Platforms.Windows folder
         dispatcherQueueHelper.EnsureWindowsSystemDispatcherQueueController();
@@ -95,5 +99,13 @@ public static class WindowHelpers
                 configurationSource = null;
             };
         }
+    }
+
+    public static void Resize(this Window window, int width, int height)
+    {
+        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+        var windowId = Win32Interop.GetWindowIdFromWindow(handle);
+        var appWindow = AppWindow.GetFromWindowId(windowId);
+        appWindow.Resize(new SizeInt32(width, height));
     }
 }

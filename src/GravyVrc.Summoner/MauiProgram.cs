@@ -5,6 +5,7 @@ using Microsoft.Maui.LifecycleEvents;
 // The namespace of where the WindowsHelpers class resides
 // In older versions of .NET MAUI, this was
 using GravyVrc.Summoner.Platforms.Windows;
+
 // In newer versions of .NET MAUI, it is now
 //using GravyVrc.Summoner.WinUI;
 #endif
@@ -37,6 +38,7 @@ public static class MauiProgram
                 {
                     // *** For Mica or Acrylic support ** //
                     window.TryMicaOrAcrylic();
+                    window.Resize(400, 800);
                 });
             });
 #endif
