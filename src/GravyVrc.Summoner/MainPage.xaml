@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GravyVrc.Summoner"
+             x:Class="GravyVrc.Summoner.MainPage">
+
+    <ContentPage.BindingContext>
+        <local:ParameterAssignmentViewModel x:Name="ViewModel" />
+    </ContentPage.BindingContext>
+
+
+    <ScrollView>
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center">
+
+            <Image
+                Source="dotnet_bot.png"
+                SemanticProperties.Description="Cute dot net bot waving hi to you!"
+                HeightRequest="200"
+                HorizontalOptions="Center" />
+
+            <Label
+                Text="Hello, World!"
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="32"
+                HorizontalOptions="Center" />
+
+            <Label
+                Text="Parameter Name" />
+            <Entry x:Name="ParameterNameEntry"
+                Placeholder="GravyVrc.Summoner:Value"
+                Text="{Binding Name, Mode=TwoWay}"
+                ClearButtonVisibility="WhileEditing"
+                ReturnType="Next"
+                IsTextPredictionEnabled="false" />
+
+            <Label
+                Text="Parameter Value" />
+            <Entry x:Name="ParameterValueEntry"
+                Placeholder="0"
+                Keyboard="Numeric"
+                Text="{Binding Value, Mode=TwoWay}"
+                ClearButtonVisibility="WhileEditing"
+                ReturnType="Next"
+                IsTextPredictionEnabled="false" />
+
+
+            <Button x:Name="SubmitButton"
+                Text="Set Value"
+                Clicked="OnButtonClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
