@@ -1,4 +1,5 @@
-﻿using GravyVrc.Summoner.Core;
+﻿using System.Text;
+using GravyVrc.Summoner.Core;
 using PCSC;
 using PCSC.Monitoring;
 using System.Text.RegularExpressions;
@@ -34,7 +35,7 @@ public partial class NfcSummoner : IDisposable
     {
         if (_monitor is not null)
             return;
-        
+
         var readers = _context.GetReaders();
 
         var monitorFactory = MonitorFactory.Instance;
@@ -49,7 +50,9 @@ public partial class NfcSummoner : IDisposable
             return;
         Console.WriteLine($"New state: {e.NewState}");
         using var reader = _context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
-        HandleIso14443_3Tag(reader);
+        var uid = HandleIso14443_3Tag(reader);
+        var content = Read(reader, 4, 96);
+        var stringContent = content.ToString();
     }
 
     private Uid? HandleIso14443_3Tag(ICardReader reader)
@@ -63,37 +66,72 @@ public partial class NfcSummoner : IDisposable
             0x00, // Le: Full Length of UID
         };
         var response = Transmit(reader, packet, 12);
-        if (response.Length < 2)
-        {
-            // something wrong
-            return null;
-        }
 
-        // last 2 bytes are status code
-        var statusCode = (ushort)BitConverter.ToInt16(response.AsSpan()[^2..]);
-
-        if (statusCode != 144)
-        {
-            // something wrong
-            //return null;
-        }
-
-        return new Uid(response[..^2]);
+        return new Uid(response.Content.ToArray());
     }
 
-    private byte[] Transmit(ICardReader reader, byte[] payload, int maxResponseSize)
+    private NfcData Read(ICardReader reader, byte block, byte length, int blockSize = 4, int packetSize = 16,
+        byte readClass = 0xff)
     {
-        try
+        return new(length > packetSize
+            ? ReadChunked(reader, block, length, blockSize, packetSize, readClass)
+            : ReadSingle(reader, block, length, blockSize, packetSize, readClass));
+
+
+        /*static IEnumerable<byte> ReadChunked(ICardReader reader, byte block, int length, int blockSize = 4, int packetSize = 16,
+            byte readClass = 0xff)
         {
-            var receiveBuffer = new byte[maxResponseSize];
-            var receivedByteLength = reader.Transmit(payload, receiveBuffer);
-            return receiveBuffer[..receivedByteLength];
-        }
-        catch
+            var remainingLength = length;
+            while (remainingLength > 0)
+            {
+                var distanceToFetch = remainingLength > packetSize ? packetSize : remainingLength;
+                
+            }
+        }*/
+
+        ReadOnlySpan<byte> ReadChunked(ICardReader reader, byte blockNumber, byte length, int blockSize = 4,
+            int packetSize = 16, byte readClass = 0xff)
         {
-            // oops
-            return Array.Empty<byte>();
+            // just copying from nfc-pcsc right now, too lazy to read all of this
+            var p = DivideRoundUp(length, packetSize);
+            var results = new List<byte[]>();
+
+            for (var i = 0; i < p; i++)
+            {
+                var block = blockNumber + ((i * packetSize) / blockSize);
+                var size = ((i + 1) * packetSize) < length ? packetSize : length - ((i) * packetSize);
+                results.Add(ReadSingle(reader, (byte)block, (byte)size, blockSize, packetSize, readClass).ToArray());
+            }
+
+            return results.SelectMany(r => r).ToArray();
         }
+
+
+        static ReadOnlySpan<byte> ReadSingle(ICardReader reader, byte blockNumber, byte length, int blockSize = 4,
+            int packetSize = 16,
+            byte readClass = 0xff)
+        {
+            var packet = new byte[]
+            {
+                readClass,
+                0xb0,
+                (byte)((blockNumber >> 8) & 0xff),
+                (byte)(blockNumber & 0xff),
+                length
+            };
+
+            var response = Transmit(reader, packet, length + 2);
+            return response.Content;
+        }
+
+        int DivideRoundUp(int dividend, int divisor) => (dividend + (divisor - 1)) / divisor;
+    }
+
+    private static TransmissionResponse Transmit(ICardReader reader, byte[] payload, int maxResponseSize)
+    {
+        var receiveBuffer = new byte[maxResponseSize];
+        var receivedByteLength = reader.Transmit(payload, receiveBuffer);
+        return new(receiveBuffer.AsSpan()[..receivedByteLength]);
     }
 
 
@@ -142,5 +180,42 @@ public struct Uid
     public override int GetHashCode()
     {
         return Value.GetHashCode();
+    }
+}
+
+public ref struct TransmissionResponse
+{
+    private readonly ReadOnlySpan<byte> _value;
+
+    public TransmissionResponse(ReadOnlySpan<byte> value)
+    {
+        if (value.Length < 2)
+            throw new ArgumentException("Response must be at least two bytes", nameof(value));
+        _value = value;
+    }
+
+    public bool IsSuccess() => (ushort)BitConverter.ToInt16(StatusCode) == 144;
+
+    public ReadOnlySpan<byte> StatusCode => _value[^2..];
+
+    public ReadOnlySpan<byte> Content => _value[..^2];
+}
+
+public ref struct NfcData
+{
+    private readonly ReadOnlySpan<byte> RawData;
+
+    public NfcData(ReadOnlySpan<byte> rawData)
+    {
+        RawData = rawData;
+    }
+
+    private const char UnicodeTerminator = '�';
+
+    public override string ToString()
+    {
+        var parsed = Encoding.UTF8.GetString(RawData[7..]);
+        var terminatorIndex = parsed.IndexOf(UnicodeTerminator);
+        return parsed[..terminatorIndex];
     }
 }
