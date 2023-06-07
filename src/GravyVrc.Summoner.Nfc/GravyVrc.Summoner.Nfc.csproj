@@ -22,9 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NdefLibrary" Version="4.1.0" />
     <PackageReference Include="PCSC" Version="6.1.3" />
-    <PackageReference Include="Vogen" Version="3.0.19" />
   </ItemGroup>
 
 </Project>

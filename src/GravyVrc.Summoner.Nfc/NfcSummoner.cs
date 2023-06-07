@@ -3,7 +3,6 @@ using GravyVrc.Summoner.Core;
 using PCSC;
 using PCSC.Monitoring;
 using System.Text.RegularExpressions;
-using Vogen;
 
 namespace GravyVrc.Summoner.Nfc;
 
@@ -14,7 +13,7 @@ public partial class NfcSummoner : IDisposable
     public delegate void SummonerTagEventHandler(ParameterAssignmentBase parameter);
 
     private ISCardMonitor? _monitor;
-    private ISCardContext _context;
+    private readonly ISCardContext _context;
 
     [GeneratedRegex(@"^gravyvrc-summoner:((int)\/(-?\d+)|(bool)\/(true|false)|(float)\/(-?\d+\.?\d*))\/(\S+)$")]
     private static partial Regex ParameterRgx();
@@ -27,8 +26,7 @@ public partial class NfcSummoner : IDisposable
 
     private void AnnounceTagMatch<T>(T value, string name) where T : struct, IComparable, IComparable<T>, IEquatable<T>
     {
-        if (ParameterTagScanned is not null)
-            ParameterTagScanned(new ParameterAssignment<T> { Name = name, Value = value });
+        ParameterTagScanned?.Invoke(new ParameterAssignment<T> { Name = name, Value = value });
     }
 
     public void StartListening()
@@ -49,91 +47,19 @@ public partial class NfcSummoner : IDisposable
         if (e.NewState != SCRState.Present)
             return;
         Console.WriteLine($"New state: {e.NewState}");
-        using var reader = _context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
-        var uid = HandleIso14443_3Tag(reader);
-        var content = Read(reader, 4, 96);
-        var stringContent = content.ToString();
-    }
-
-    private Uid? HandleIso14443_3Tag(ICardReader reader)
-    {
-        var packet = new byte[]
+        try
         {
-            0xff, // Class
-            0xca, // INS
-            0x00, // P1: Get current card UID
-            0x00, // P2
-            0x00, // Le: Full Length of UID
-        };
-        var response = Transmit(reader, packet, 12);
-
-        return new Uid(response.Content.ToArray());
-    }
-
-    private NfcData Read(ICardReader reader, byte block, byte length, int blockSize = 4, int packetSize = 16,
-        byte readClass = 0xff)
-    {
-        return new(length > packetSize
-            ? ReadChunked(reader, block, length, blockSize, packetSize, readClass)
-            : ReadSingle(reader, block, length, blockSize, packetSize, readClass));
-
-
-        /*static IEnumerable<byte> ReadChunked(ICardReader reader, byte block, int length, int blockSize = 4, int packetSize = 16,
-            byte readClass = 0xff)
-        {
-            var remainingLength = length;
-            while (remainingLength > 0)
-            {
-                var distanceToFetch = remainingLength > packetSize ? packetSize : remainingLength;
-                
-            }
-        }*/
-
-        ReadOnlySpan<byte> ReadChunked(ICardReader reader, byte blockNumber, byte length, int blockSize = 4,
-            int packetSize = 16, byte readClass = 0xff)
-        {
-            // just copying from nfc-pcsc right now, too lazy to read all of this
-            var p = DivideRoundUp(length, packetSize);
-            var results = new List<byte[]>();
-
-            for (var i = 0; i < p; i++)
-            {
-                var block = blockNumber + ((i * packetSize) / blockSize);
-                var size = ((i + 1) * packetSize) < length ? packetSize : length - ((i) * packetSize);
-                results.Add(ReadSingle(reader, (byte)block, (byte)size, blockSize, packetSize, readClass).ToArray());
-            }
-
-            return results.SelectMany(r => r).ToArray();
+            using var reader = _context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
+            // var uid = reader.HandleIso14443_3Tag();
+            var content = reader.Read(4, 96);
+            var stringContent = content.ToString();
+            ParseTagData(stringContent);
         }
-
-
-        static ReadOnlySpan<byte> ReadSingle(ICardReader reader, byte blockNumber, byte length, int blockSize = 4,
-            int packetSize = 16,
-            byte readClass = 0xff)
+        catch (Exception exception)
         {
-            var packet = new byte[]
-            {
-                readClass,
-                0xb0,
-                (byte)((blockNumber >> 8) & 0xff),
-                (byte)(blockNumber & 0xff),
-                length
-            };
-
-            var response = Transmit(reader, packet, length + 2);
-            return response.Content;
+            // couldn't read that tag, oh well 🤷‍♀️
         }
-
-        int DivideRoundUp(int dividend, int divisor) => (dividend + (divisor - 1)) / divisor;
     }
-
-    private static TransmissionResponse Transmit(ICardReader reader, byte[] payload, int maxResponseSize)
-    {
-        var receiveBuffer = new byte[maxResponseSize];
-        var receivedByteLength = reader.Transmit(payload, receiveBuffer);
-        return new(receiveBuffer.AsSpan()[..receivedByteLength]);
-    }
-
 
     public void Dispose()
     {
