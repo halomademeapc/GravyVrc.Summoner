@@ -1,29 +1,111 @@
 ﻿using GravyVrc.Summoner.Core;
-using System.Text;
+using PCSC;
+using PCSC.Monitoring;
 using System.Text.RegularExpressions;
+using Vogen;
 
 namespace GravyVrc.Summoner.Nfc;
+
 public partial class NfcSummoner : IDisposable
 {
     public event SummonerTagEventHandler? ParameterTagScanned;
 
     public delegate void SummonerTagEventHandler(ParameterAssignmentBase parameter);
 
-    private readonly INfcReader _reader = new NfcReader();
+    private ISCardMonitor? _monitor;
+    private ISCardContext _context;
 
     [GeneratedRegex(@"^gravyvrc-summoner:((int)\/(-?\d+)|(bool)\/(true|false)|(float)\/(-?\d+\.?\d*))\/(\S+)$")]
     private static partial Regex ParameterRgx();
 
     public NfcSummoner()
     {
-        _reader.CardInserted += OnCardReady;
+        var contextFactory = ContextFactory.Instance;
+        _context = contextFactory.Establish(SCardScope.System);
     }
 
-    private void OnCardReady()
+    private void AnnounceTagMatch<T>(T value, string name) where T : struct, IComparable, IComparable<T>, IEquatable<T>
     {
-        var cardData = _reader.ReadBlock(2);
-        var stringData = Encoding.ASCII.GetString(cardData);
-        var match = ParameterRgx().Match(stringData);
+        if (ParameterTagScanned is not null)
+            ParameterTagScanned(new ParameterAssignment<T> { Name = name, Value = value });
+    }
+
+    public void StartListening()
+    {
+        if (_monitor is not null)
+            return;
+        
+        var readers = _context.GetReaders();
+
+        var monitorFactory = MonitorFactory.Instance;
+        _monitor = monitorFactory.Create(SCardScope.System);
+        _monitor.StatusChanged += MonitorOnStatusChanged;
+        _monitor.Start(readers);
+    }
+
+    private void MonitorOnStatusChanged(object sender, StatusChangeEventArgs e)
+    {
+        if (e.NewState != SCRState.Present)
+            return;
+        Console.WriteLine($"New state: {e.NewState}");
+        using var reader = _context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
+        HandleIso14443_3Tag(reader);
+    }
+
+    private Uid? HandleIso14443_3Tag(ICardReader reader)
+    {
+        var packet = new byte[]
+        {
+            0xff, // Class
+            0xca, // INS
+            0x00, // P1: Get current card UID
+            0x00, // P2
+            0x00, // Le: Full Length of UID
+        };
+        var response = Transmit(reader, packet, 12);
+        if (response.Length < 2)
+        {
+            // something wrong
+            return null;
+        }
+
+        // last 2 bytes are status code
+        var statusCode = (ushort)BitConverter.ToInt16(response.AsSpan()[^2..]);
+
+        if (statusCode != 144)
+        {
+            // something wrong
+            //return null;
+        }
+
+        return new Uid(response[..^2]);
+    }
+
+    private byte[] Transmit(ICardReader reader, byte[] payload, int maxResponseSize)
+    {
+        try
+        {
+            var receiveBuffer = new byte[maxResponseSize];
+            var receivedByteLength = reader.Transmit(payload, receiveBuffer);
+            return receiveBuffer[..receivedByteLength];
+        }
+        catch
+        {
+            // oops
+            return Array.Empty<byte>();
+        }
+    }
+
+
+    public void Dispose()
+    {
+        _context?.Dispose();
+        _monitor?.Dispose();
+    }
+
+    private void ParseTagData(string data)
+    {
+        var match = ParameterRgx().Match(data);
         if (!match.Success)
             return;
 
@@ -36,20 +118,29 @@ public partial class NfcSummoner : IDisposable
         else if (match.Groups[6].Success && float.TryParse(match.Groups[7].Value, out var parsedFloat))
             AnnounceTagMatch(parsedFloat, parameterName);
     }
+}
 
-    private void AnnounceTagMatch<T>(T value, string name) where T : struct, IComparable, IComparable<T>, IEquatable<T>
+public struct Uid
+{
+    public Uid(byte[] value)
     {
-        if (ParameterTagScanned is not null)
-            ParameterTagScanned(new ParameterAssignment<T> { Name = name, Value = value });
+        Value = value;
     }
 
-    public void StartListening()
-    {
-        _reader.Watch();
-    }
+    public byte[] Value { get; }
 
-    public void Dispose()
+    public override string ToString() => BitConverter.ToString(Value);
+
+    public override bool Equals(object? obj) => obj is Uid uid && uid.Value.SequenceEqual(Value);
+
+    public bool Equals(Uid other) => other.Value.SequenceEqual(Value);
+
+    public static bool operator ==(Uid a, Uid b) => a.Equals(b);
+
+    public static bool operator !=(Uid a, Uid b) => !a.Equals(b);
+
+    public override int GetHashCode()
     {
-        _reader.Dispose();
+        return Value.GetHashCode();
     }
 }

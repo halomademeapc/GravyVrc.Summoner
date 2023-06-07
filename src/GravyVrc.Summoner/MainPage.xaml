@@ -41,7 +41,8 @@
 
             <Picker x:Name="ParameterTypePicker"
                     Title="Parameter Type"
-                    SelectedItem="{Binding Type}">
+                    SelectedItem="{Binding Type}"
+                    HorizontalOptions="Fill">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type local:ParameterType}">
                         <local:ParameterType>Int</local:ParameterType>
@@ -63,7 +64,8 @@
                            Text="{Binding IntValue, Mode=TwoWay}"
                            ClearButtonVisibility="WhileEditing"
                            ReturnType="Next"
-                           IsTextPredictionEnabled="false" />
+                           IsTextPredictionEnabled="false"
+                           HorizontalOptions="Fill" />
                     <Stepper Value="{Binding IntValue, Mode=TwoWay}"
                              Minimum="{Binding Source={x:Static x:Int32.MinValue}}"
                              Maximum="{Binding Source={x:Static x:Int32.MaxValue}}" />
@@ -76,7 +78,8 @@
                            Text="{Binding FloatValue, Mode=TwoWay}"
                            ClearButtonVisibility="WhileEditing"
                            ReturnType="Next"
-                           IsTextPredictionEnabled="false" />
+                           IsTextPredictionEnabled="false"
+                           HorizontalOptions="Fill" />
                 </HorizontalStackLayout>
 
                 <HorizontalStackLayout x:Name="BoolInputLayout"

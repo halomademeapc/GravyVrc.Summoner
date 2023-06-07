@@ -14,6 +14,7 @@ public partial class MainPage : ContentPage
         ViewModel.PropertyChanged += (_, _) => OnViewModelChange();
         _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
         OnViewModelChange();
+        _nfcSummoner.StartListening();
     }
 
     void OnNfcTagScanned(ParameterAssignmentBase parameter)
