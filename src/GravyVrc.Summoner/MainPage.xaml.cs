@@ -20,6 +20,22 @@ public partial class MainPage : ContentPage
     void OnNfcTagScanned(ParameterAssignmentBase parameter)
     {
         SetVrcParameter(parameter);
+        ViewModel.Name = parameter.Name;
+        switch (parameter)
+        {
+            case ParameterAssignment<int> intAssignment:
+                ViewModel.Type = ParameterType.Int;
+                ViewModel.IntValue = intAssignment.Value;
+                break;
+            case ParameterAssignment<float> floatAssignment:
+                ViewModel.Type =  ParameterType.Float;
+                ViewModel.FloatValue = floatAssignment.Value;
+                break;
+            case ParameterAssignment<bool> boolAssignment:
+                ViewModel.Type = ParameterType.Bool;
+                ViewModel.BoolValue = boolAssignment.Value;
+                break;
+        }
     }
 
     private static void SetVrcParameter(ParameterAssignmentBase assignment)

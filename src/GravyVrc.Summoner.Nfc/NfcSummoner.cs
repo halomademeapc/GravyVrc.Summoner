@@ -129,18 +129,18 @@ public ref struct TransmissionResponse
 
 public ref struct NfcData
 {
-    private readonly ReadOnlySpan<byte> RawData;
+    private readonly ReadOnlySpan<byte> _rawData;
 
     public NfcData(ReadOnlySpan<byte> rawData)
     {
-        RawData = rawData;
+        _rawData = rawData;
     }
 
     private const char UnicodeTerminator = '�';
 
     public override string ToString()
     {
-        var parsed = Encoding.UTF8.GetString(RawData[7..]);
+        var parsed = Encoding.UTF8.GetString(_rawData[7..]);
         var terminatorIndex = parsed.IndexOf(UnicodeTerminator);
         return parsed[..terminatorIndex];
     }
