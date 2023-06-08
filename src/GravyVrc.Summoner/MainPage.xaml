@@ -41,7 +41,7 @@
 
             <Picker x:Name="ParameterTypePicker"
                     Title="Parameter Type"
-                    SelectedItem="{Binding Type}"
+                    SelectedItem="{Binding Type, Mode=TwoWay}"
                     HorizontalOptions="Fill">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type local:ParameterType}">
@@ -84,9 +84,9 @@
 
                 <HorizontalStackLayout x:Name="BoolInputLayout"
                                        RadioButtonGroup.GroupName="ParameterBoolValueRadioGroup"
-                                       RadioButtonGroup.SelectedValue="{Binding BoolValue}">
-                    <RadioButton Value="False" Content="false" />
-                    <RadioButton Value="True" Content="true" />
+                                       RadioButtonGroup.SelectedValue="{Binding BoolValue, Mode=TwoWay}">
+                    <RadioButton x:Name="FalseRadio" Value="false" Content="false" />
+                    <RadioButton x:Name="TrueRadio" Value="true" Content="true" />
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 

@@ -55,7 +55,7 @@ public partial class NfcSummoner : IDisposable
             ParameterAssignment<float> => "float",
             _ => throw new NotSupportedException("Invalid parameter type")
         };
-        var uri = $"gravyvrc-summoner:{type}/{assignment.ObjectValue}/{assignment.Name}";
+        var uri = $"gravyvrc-summoner:{type}/{assignment.ObjectValue.ToString()?.ToLower()}/{assignment.Name}";
         var data = new NfcUriData(uri);
         reader.Write(4, data.Data.ToArray());
     }
