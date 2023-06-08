@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0-windows10.0.19041.0</TargetFrameworks>
@@ -19,11 +19,19 @@
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
-		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<Company>GravyVRC</Company>
 		<Product>Summoner</Product>
 	  <ApplicationTitle>GravyVRC Summoner</ApplicationTitle>
+	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+	  <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+	  <GenerateTestArtifacts>False</GenerateTestArtifacts>
+	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+	  <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -54,4 +62,6 @@
 	  <ProjectReference Include="..\GravyLink.Summoner.Core\GravyLink.Summoner.Core.csproj" />
 	  <ProjectReference Include="..\GravyVrc.Summoner.Nfc\GravyVrc.Summoner.Nfc.csproj" />
 	</ItemGroup>
+
+	<Target Name="_GenerateAppxPackage" Condition="'$(AppxPackage)' == 'true'" />
 </Project>

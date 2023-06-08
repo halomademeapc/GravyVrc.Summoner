@@ -74,7 +74,7 @@ public partial class NfcSummoner : IDisposable
             var stringContent = content.ToString();
             ParseTagData(stringContent);
         }
-        catch (Exception exception)
+        catch (Exception)
         {
             // couldn't read that tag, oh well 🤷‍♀️
         }
