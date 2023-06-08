@@ -7,14 +7,22 @@ namespace GravyVrc.Summoner;
 public partial class MainPage : ContentPage
 {
     private readonly NfcSummoner _nfcSummoner = new();
+    private string _readerName = null;
 
     public MainPage()
     {
         InitializeComponent();
         ViewModel.PropertyChanged += (_, _) => OnViewModelChange();
         _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
+        _nfcSummoner.ReaderReady += OnReaderReady;
         OnViewModelChange();
         _nfcSummoner.StartListening();
+    }
+
+    private void OnReaderReady(ReaderReadyArgs args)
+    {
+        _readerName = args.ReaderName;
+        ViewModel.CanWrite = args.IsReady;
     }
 
     void OnNfcTagScanned(ParameterAssignmentBase parameter)
@@ -28,7 +36,7 @@ public partial class MainPage : ContentPage
                 ViewModel.IntValue = intAssignment.Value;
                 break;
             case ParameterAssignment<float> floatAssignment:
-                ViewModel.Type =  ParameterType.Float;
+                ViewModel.Type = ParameterType.Float;
                 ViewModel.FloatValue = floatAssignment.Value;
                 break;
             case ParameterAssignment<bool> boolAssignment:
@@ -70,8 +78,17 @@ public partial class MainPage : ContentPage
         BoolInputLayout.IsVisible = ViewModel.Type == ParameterType.Bool;
     }
 
-    private void OnDebugClicked(object sender, EventArgs e)
+    private async void OnWriteClicked(object sender, EventArgs e)
     {
-        //throw new NotImplementedException();
+        try
+        {
+            _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
+            await DisplayAlert("Tag Written", "NFC tag was written successfully!", "OK");
+        }
+        catch
+        {
+            await DisplayAlert("Write Failure",
+                "Unable to write NFC tag and I'm too lazy to put in troubleshooting info just yet.", "Mega Oof");
+        }
     }
 }

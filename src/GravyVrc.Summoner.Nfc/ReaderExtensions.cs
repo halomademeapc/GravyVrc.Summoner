@@ -19,7 +19,7 @@ internal static class ReaderExtensions
         return new Uid(response.Content.ToArray());
     }
 
-    internal static NfcData Read(this ICardReader reader, byte block, byte length, int blockSize = 4,
+    internal static NfcUriData Read(this ICardReader reader, byte block, byte length, int blockSize = 4,
         int packetSize = 16,
         byte readClass = 0xff)
     {
@@ -73,6 +73,45 @@ internal static class ReaderExtensions
         }
 
         int DivideRoundUp(int dividend, int divisor) => (dividend + (divisor - 1)) / divisor;
+    }
+
+    internal static void Write(this ICardReader reader, byte block, byte[] data, byte blockSize = 4)
+    {
+        if (data.Length > blockSize)
+            WriteChunked(reader, block, data, blockSize);
+        else
+            WriteSingle(reader, block, data, blockSize);
+
+        static void WriteChunked(ICardReader reader, byte blockNumber, byte[] data, byte blockSize = 4)
+        {
+            // just copying from nfc-pcsc right now, too lazy to read all of this
+            var p = data.Length / blockSize;
+
+            for (var i = 0; i < p; i++)
+            {
+                var block = blockNumber + i;
+                var start = i * blockSize;
+                var end = (i + 1) * blockSize;
+                var part = data[start..end];
+                WriteSingle(reader, (byte)block, part, blockSize);
+            }
+        }
+
+
+        static void WriteSingle(ICardReader reader, byte blockNumber, byte[] data, byte blockSize)
+        {
+            var packetHeader = new byte[]
+            {
+                0xff, // Class
+                0xd6, // Ins
+                0x00, // P1
+                blockNumber, // P2: Block Number
+                blockSize, // Le: Number of Bytes to Update
+            };
+            var payload = packetHeader.Concat(data).ToArray();
+
+            Transmit(reader, payload, 2);
+        }
     }
 
     private static TransmissionResponse Transmit(this ICardReader reader, byte[] payload, int maxResponseSize)

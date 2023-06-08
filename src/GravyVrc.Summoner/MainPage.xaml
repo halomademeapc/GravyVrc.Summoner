@@ -93,7 +93,8 @@
             <HorizontalStackLayout Spacing="12">
                 <Button x:Name="WriteButton"
                         Text="Write Tag"
-                        Clicked="OnDebugClicked" />
+                        Clicked="OnWriteClicked"
+                        IsEnabled="{Binding CanWrite}" />
                 <Button x:Name="SubmitButton"
                         Text="Set Value"
                         Clicked="OnButtonClicked" />

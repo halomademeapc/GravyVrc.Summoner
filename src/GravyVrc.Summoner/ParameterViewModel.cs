@@ -6,13 +6,14 @@ namespace GravyVrc.Summoner;
 
 internal class ParameterViewModel : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged;
 
     private string _name = "Gv/Summoner/Value";
     private int _intValue;
     private bool _boolValue;
     private float _floatValue;
     private ParameterType _type;
+    private bool _canWrite;
 
     public string Name
     {
@@ -58,7 +59,7 @@ internal class ParameterViewModel : INotifyPropertyChanged
         get => _floatValue;
         set
         {
-            if (value != _floatValue)
+            if (Math.Abs(value - _floatValue) > .000001)
             {
                 _floatValue = value;
                 OnPropertyChanged();
@@ -74,6 +75,19 @@ internal class ParameterViewModel : INotifyPropertyChanged
             if (value != _type)
             {
                 _type = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool CanWrite
+    {
+        get => _canWrite;
+        set
+        {
+            if (value != _canWrite)
+            {
+                _canWrite = value;
                 OnPropertyChanged();
             }
         }

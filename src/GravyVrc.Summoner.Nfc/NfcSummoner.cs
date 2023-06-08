@@ -8,9 +8,12 @@ namespace GravyVrc.Summoner.Nfc;
 
 public partial class NfcSummoner : IDisposable
 {
-    public event SummonerTagEventHandler? ParameterTagScanned;
+    public event TagEventHandler? ParameterTagScanned;
+    public event ReaderReadyEventHandler? ReaderReady;
 
-    public delegate void SummonerTagEventHandler(ParameterAssignmentBase parameter);
+    public delegate void TagEventHandler(ParameterAssignmentBase parameter);
+
+    public delegate void ReaderReadyEventHandler(ReaderReadyArgs args);
 
     private ISCardMonitor? _monitor;
     private readonly ISCardContext _context;
@@ -42,15 +45,31 @@ public partial class NfcSummoner : IDisposable
         _monitor.Start(readers);
     }
 
+    public void WriteTag(ParameterAssignmentBase assignment, string readerName)
+    {
+        using var reader = _context.ConnectReader(readerName, SCardShareMode.Shared, SCardProtocol.Any);
+        var type = assignment switch
+        {
+            ParameterAssignment<int> => "int",
+            ParameterAssignment<bool> => "bool",
+            ParameterAssignment<float> => "float",
+            _ => throw new NotSupportedException("Invalid parameter type")
+        };
+        var uri = $"gravyvrc-summoner:{type}/{assignment.ObjectValue}/{assignment.Name}";
+        var data = new NfcUriData(uri);
+        reader.Write(4, data.Data.ToArray());
+    }
+
     private void MonitorOnStatusChanged(object sender, StatusChangeEventArgs e)
     {
+        ReaderReady?.Invoke(new ReaderReadyArgs(e.ReaderName, e.NewState.HasFlag(SCRState.Present)));
         if (e.NewState != SCRState.Present)
             return;
+
         Console.WriteLine($"New state: {e.NewState}");
         try
         {
             using var reader = _context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
-            // var uid = reader.HandleIso14443_3Tag();
             var content = reader.Read(4, 96);
             var stringContent = content.ToString();
             ParseTagData(stringContent);
@@ -84,7 +103,9 @@ public partial class NfcSummoner : IDisposable
     }
 }
 
-public struct Uid
+public record struct ReaderReadyArgs(string ReaderName, bool IsReady);
+
+internal struct Uid
 {
     public Uid(byte[] value)
     {
@@ -109,7 +130,7 @@ public struct Uid
     }
 }
 
-public ref struct TransmissionResponse
+internal ref struct TransmissionResponse
 {
     private readonly ReadOnlySpan<byte> _value;
 
@@ -127,20 +148,31 @@ public ref struct TransmissionResponse
     public ReadOnlySpan<byte> Content => _value[..^2];
 }
 
-public ref struct NfcData
+internal ref struct NfcUriData
 {
-    private readonly ReadOnlySpan<byte> _rawData;
+    public readonly ReadOnlySpan<byte> Data;
 
-    public NfcData(ReadOnlySpan<byte> rawData)
+    public NfcUriData(ReadOnlySpan<byte> data)
     {
-        _rawData = rawData;
+        Data = data;
     }
 
-    private const char UnicodeTerminator = '�';
+    public NfcUriData(string uri)
+    {
+        var fullString = $"{uri}{UnicodeTerminator}";
+        Data = Prefix.Concat(Encoding.UTF8.GetBytes(fullString)).ToArray();
+    }
+
+    public const char UnicodeTerminator = '�';
+
+    private static readonly byte[] Prefix =
+    {
+        3, 41, 209, 1, 37, 85, 0
+    };
 
     public override string ToString()
     {
-        var parsed = Encoding.UTF8.GetString(_rawData[7..]);
+        var parsed = Encoding.UTF8.GetString(Data[7..]);
         var terminatorIndex = parsed.IndexOf(UnicodeTerminator);
         return parsed[..terminatorIndex];
     }
