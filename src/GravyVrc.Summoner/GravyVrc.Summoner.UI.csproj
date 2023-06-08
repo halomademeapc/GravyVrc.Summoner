@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0-windows10.0.19041.0</TargetFrameworks>
@@ -19,8 +19,11 @@
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<Company>GravyVRC</Company>
+		<Product>Summoner</Product>
+	  <ApplicationTitle>GravyVRC Summoner</ApplicationTitle>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -42,6 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 		<PackageReference Include="VRCOscLib" Version="1.4.3" />
 	</ItemGroup>

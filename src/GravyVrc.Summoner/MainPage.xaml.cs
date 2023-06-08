@@ -1,6 +1,8 @@
 ﻿using BuildSoft.VRChat.Osc;
 using GravyVrc.Summoner.Core;
 using GravyVrc.Summoner.Nfc;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 
 namespace GravyVrc.Summoner;
 
@@ -67,6 +69,9 @@ public partial class MainPage : ContentPage
                 OscParameter.SendAvatarParameter(boolAssignment.Name, boolAssignment.Value);
                 break;
         }
+
+        var toast = Toast.Make($"Set {assignment.Name} to {assignment.ObjectValue}");
+        toast.Show();
     }
 
     void OnButtonClicked(object sender, EventArgs args)
@@ -90,7 +95,8 @@ public partial class MainPage : ContentPage
         try
         {
             _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
-            DisplayAlert("Tag Written", "NFC tag was written successfully!", "OK");
+            var toast = Toast.Make("NFC tag was written successfully!");
+            toast.Show();
         }
         catch
         {
