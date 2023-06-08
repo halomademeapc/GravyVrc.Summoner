@@ -78,16 +78,16 @@ public partial class MainPage : ContentPage
         BoolInputLayout.IsVisible = ViewModel.Type == ParameterType.Bool;
     }
 
-    private async void OnWriteClicked(object sender, EventArgs e)
+    private void OnWriteClicked(object sender, EventArgs e)
     {
         try
         {
             _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
-            await DisplayAlert("Tag Written", "NFC tag was written successfully!", "OK");
+            DisplayAlert("Tag Written", "NFC tag was written successfully!", "OK");
         }
         catch
         {
-            await DisplayAlert("Write Failure",
+            DisplayAlert("Write Failure",
                 "Unable to write NFC tag and I'm too lazy to put in troubleshooting info just yet.", "Mega Oof");
         }
     }
