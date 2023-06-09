@@ -3,10 +3,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GravyVrc.Summoner"
+             xmlns:fluent="clr-namespace:MauiIcons.Fluent;assembly=MauiIcons.Fluent"
              x:Class="GravyVrc.Summoner.MainPage">
 
     <ContentPage.BindingContext>
-        <local:ParameterViewModel x:Name="ViewModel" />
+        <local:ParameterListViewModel x:Name="ViewModel" />
     </ContentPage.BindingContext>
 
 
@@ -23,80 +24,75 @@
                 HorizontalOptions="Center" />
 
             <Label
-                Text="Scan an NFC tag or set the value manually"
+                Text="Scan an NFC tag or set some values manually"
                 SemanticProperties.HeadingLevel="Level1"
                 FontSize="26" />
 
-            <VerticalStackLayout>
-                <Label
-                    Text="Parameter Name"
-                    Margin="0,0,0,8" />
-                <Entry x:Name="ParameterNameEntry"
-                       Placeholder="GravyVrc.Summoner:Value"
-                       Text="{Binding Name, Mode=TwoWay}"
-                       ClearButtonVisibility="WhileEditing"
-                       ReturnType="Next"
-                       IsTextPredictionEnabled="false" />
-            </VerticalStackLayout>
-
-            <Picker x:Name="ParameterTypePicker"
-                    Title="Parameter Type"
-                    SelectedItem="{Binding Type, Mode=TwoWay}"
-                    HorizontalOptions="Fill">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type local:ParameterType}">
-                        <local:ParameterType>Int</local:ParameterType>
-                        <local:ParameterType>Float</local:ParameterType>
-                        <local:ParameterType>Bool</local:ParameterType>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-
-            <VerticalStackLayout>
-                <Label
-                    Text="Parameter Value"
-                    Margin="0,0,0,8" />
-                <HorizontalStackLayout x:Name="IntInputLayout"
-                                       Spacing="8">
-                    <Entry x:Name="ParameterIntValueEntry"
-                           Placeholder="0"
-                           Keyboard="Numeric"
-                           Text="{Binding IntValue, Mode=TwoWay}"
-                           ClearButtonVisibility="WhileEditing"
-                           ReturnType="Next"
-                           IsTextPredictionEnabled="false"
-                           HorizontalOptions="Fill" />
-                    <Stepper Value="{Binding IntValue, Mode=TwoWay}"
-                             Minimum="{Binding Source={x:Static x:Int32.MinValue}}"
-                             Maximum="{Binding Source={x:Static x:Int32.MaxValue}}" />
-                </HorizontalStackLayout>
-
-                <HorizontalStackLayout x:Name="FloatInputLayout">
-                    <Entry x:Name="ParameterFloatValueEntry"
-                           Placeholder="0"
-                           Keyboard="Numeric"
-                           Text="{Binding FloatValue, Mode=TwoWay}"
-                           ClearButtonVisibility="WhileEditing"
-                           ReturnType="Next"
-                           IsTextPredictionEnabled="false"
-                           HorizontalOptions="Fill" />
-                </HorizontalStackLayout>
-
-                <HorizontalStackLayout x:Name="BoolInputLayout"
-                                       RadioButtonGroup.GroupName="ParameterBoolValueRadioGroup"
-                                       RadioButtonGroup.SelectedValue="{Binding BoolValue, Mode=TwoWay}">
-                    <RadioButton x:Name="FalseRadio" Value="false" Content="false" />
-                    <RadioButton x:Name="TrueRadio" Value="true" Content="true" />
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
+            <Label
+                Text="Parameters"
+                SemanticProperties.HeadingLevel="Level2"
+                FontSize="16" />
+            <ListView x:Name="ParameterList"
+                      SelectionMode="None"
+                      ItemsSource="{Binding Collection}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid ColumnSpacing="6"
+                                  RowSpacing="10"
+                                  Padding="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding Value}"
+                                       VerticalOptions="Center" />
+                                <ImageButton Grid.Column="2"
+                                             Aspect="Center"
+                                             Padding="2"
+                                             Source="{fluent:Icon Icon=Edit48, IconSize=12 }"
+                                             ToolTipProperties.Text="Edit"
+                                             Clicked="OnEditClicked"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Center" />
+                                <ImageButton Grid.Column="3"
+                                             Aspect="Center"
+                                             Padding="2"
+                                             Source="{fluent:Icon Icon=Delete48, IconSize=12 }"
+                                             ToolTipProperties.Text="Remove"
+                                             Clicked="OnRemoveClicked"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Center" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button x:Name="AddButton"
+                    Text="Add Parameter"
+                    ImageSource="{fluent:Icon Icon=Add28, IconSize=16 }"
+                    HorizontalOptions="End"
+                    Clicked="OnAddClicked" />
 
             <HorizontalStackLayout Spacing="12">
                 <Button x:Name="WriteButton"
                         Text="Write Tag"
                         Clicked="OnWriteClicked"
+                        ImageSource="{fluent:Icon Icon=DeveloperBoardLightning20, IconSize=16 }"
                         IsEnabled="{Binding CanWrite}" />
                 <Button x:Name="SubmitButton"
                         Text="Set Value"
+                        ImageSource="{fluent:Icon Icon=Send28, IconSize=16 }"
                         Clicked="OnButtonClicked" />
             </HorizontalStackLayout>
 

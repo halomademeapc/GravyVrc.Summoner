@@ -3,6 +3,7 @@ using GravyVrc.Summoner.Core;
 using PCSC;
 using PCSC.Monitoring;
 using System.Text.RegularExpressions;
+using MessagePack;
 
 namespace GravyVrc.Summoner.Nfc;
 
@@ -11,25 +12,24 @@ public partial class NfcSummoner : IDisposable
     public event TagEventHandler? ParameterTagScanned;
     public event ReaderReadyEventHandler? ReaderReady;
 
-    public delegate void TagEventHandler(ParameterAssignmentBase parameter);
+    public delegate void TagEventHandler(IList<ParameterAssignmentBase> parameters);
 
     public delegate void ReaderReadyEventHandler(ReaderReadyArgs args);
 
+    private static readonly byte[] Signature = { 69, 4, 2, 0 };
+    private static readonly byte[] BlankBlock = { 0, 0, 0, 0 };
+    private const byte BlockSize = 4;
+    private const byte SignatureBlock = 4;
+    private const byte HeaderBlock = 5;
+    private const byte ContentBlock = 6;
+
     private ISCardMonitor? _monitor;
     private readonly ISCardContext _context;
-
-    [GeneratedRegex(@"^gravyvrc-summoner:((int)\/(-?\d+)|(bool)\/(true|false)|(float)\/(-?\d+\.?\d*))\/(\S+)$")]
-    private static partial Regex ParameterRgx();
 
     public NfcSummoner()
     {
         var contextFactory = ContextFactory.Instance;
         _context = contextFactory.Establish(SCardScope.System);
-    }
-
-    private void AnnounceTagMatch<T>(T value, string name) where T : struct, IComparable, IComparable<T>, IEquatable<T>
-    {
-        ParameterTagScanned?.Invoke(new ParameterAssignment<T> { Name = name, Value = value });
     }
 
     public void StartListening()
@@ -42,22 +42,19 @@ public partial class NfcSummoner : IDisposable
         var monitorFactory = MonitorFactory.Instance;
         _monitor = monitorFactory.Create(SCardScope.System);
         _monitor.StatusChanged += MonitorOnStatusChanged;
-        _monitor.Start(readers);
+        if (readers.Any())
+            _monitor.Start(readers);
     }
 
-    public void WriteTag(ParameterAssignmentBase assignment, string readerName)
+    public void WriteTag(IEnumerable<ParameterAssignmentBase> assignment, string readerName)
     {
         using var reader = _context.ConnectReader(readerName, SCardShareMode.Shared, SCardProtocol.Any);
-        var type = assignment switch
-        {
-            ParameterAssignment<int> => "int",
-            ParameterAssignment<bool> => "bool",
-            ParameterAssignment<float> => "float",
-            _ => throw new NotSupportedException("Invalid parameter type")
-        };
-        var uri = $"gravyvrc-summoner:{type}/{assignment.ObjectValue.ToString()?.ToLower()}/{assignment.Name}";
-        var data = new NfcUriData(uri);
-        reader.Write(4, data.Data.ToArray());
+        var list = assignment.Select(ParameterStorage.FromAssignment).ToList();
+        var data = MessagePackSerializer.Serialize(list);
+        var header = new Header(data.Length);
+        reader.Write(SignatureBlock, Signature);
+        reader.Write(HeaderBlock, header.GetBytes());
+        reader.Write(ContentBlock, data.Concat(BlankBlock).ToArray());
     }
 
     private void MonitorOnStatusChanged(object sender, StatusChangeEventArgs e)
@@ -70,9 +67,15 @@ public partial class NfcSummoner : IDisposable
         try
         {
             using var reader = _context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
-            var content = reader.Read(4, 96);
-            var stringContent = content.ToString();
-            ParseTagData(stringContent);
+            var receivedSignature = reader.Read(SignatureBlock, BlockSize);
+            if (!receivedSignature.Data.SequenceEqual(Signature))
+                return; // not ours
+
+            var receivedHeader = reader.Read(HeaderBlock, BlockSize);
+            var parsedHeader = new Header(receivedHeader.Data.ToArray());
+
+            var receivedContent = reader.Read(ContentBlock, parsedHeader.DataLength);
+            ParseTagData(receivedContent.Data.ToArray());
         }
         catch (Exception)
         {
@@ -86,20 +89,11 @@ public partial class NfcSummoner : IDisposable
         _monitor?.Dispose();
     }
 
-    private void ParseTagData(string data)
+    private void ParseTagData(byte[] data)
     {
-        var match = ParameterRgx().Match(data);
-        if (!match.Success)
-            return;
-
-        var parameterName = match.Groups[8].Value;
-
-        if (match.Groups[2].Success && int.TryParse(match.Groups[3].Value, out var parsedInt))
-            AnnounceTagMatch(parsedInt, parameterName);
-        else if (match.Groups[4].Success && bool.TryParse(match.Groups[5].Value, out var parsedBool))
-            AnnounceTagMatch(parsedBool, parameterName);
-        else if (match.Groups[6].Success && float.TryParse(match.Groups[7].Value, out var parsedFloat))
-            AnnounceTagMatch(parsedFloat, parameterName);
+        var deserialized = MessagePackSerializer.Deserialize<List<ParameterStorage>>(data);
+        var assignments = deserialized.Select(s => s.ToAssignment()).ToList();
+        ParameterTagScanned?.Invoke(assignments);
     }
 }
 
@@ -175,5 +169,31 @@ internal ref struct NfcUriData
         var parsed = Encoding.UTF8.GetString(Data[7..]);
         var terminatorIndex = parsed.IndexOf(UnicodeTerminator);
         return parsed[..terminatorIndex];
+    }
+}
+
+internal ref struct Header
+{
+    public int DataLength { get; }
+
+    public Header(byte[] data)
+    {
+        if (BitConverter.IsLittleEndian)
+            data = data.Reverse().ToArray();
+
+        DataLength = BitConverter.ToInt32(data, 0);
+    }
+
+    public Header(int dataLength)
+    {
+        DataLength = dataLength;
+    }
+
+    public byte[] GetBytes()
+    {
+        var intBytes = BitConverter.GetBytes(DataLength);
+        if (BitConverter.IsLittleEndian)
+            Array.Reverse(intBytes);
+        return intBytes;
     }
 }

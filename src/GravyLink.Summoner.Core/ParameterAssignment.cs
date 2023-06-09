@@ -16,3 +16,10 @@ public abstract class ParameterAssignmentBase
     public abstract string Name { get; set; }
     public abstract object ObjectValue { get; }
 }
+
+public enum ParameterType
+{
+    Int,
+    Bool,
+    Float
+}

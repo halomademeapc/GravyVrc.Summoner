@@ -2,7 +2,6 @@
 using GravyVrc.Summoner.Core;
 using GravyVrc.Summoner.Nfc;
 using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
 
 namespace GravyVrc.Summoner;
 
@@ -10,6 +9,9 @@ public partial class MainPage : ContentPage
 {
     private readonly NfcSummoner _nfcSummoner = new();
     private string _readerName = null;
+
+    private const string TriggerParameterName = "Gv/Summoner/Triggered";
+    private const string PresentParameterName = "Gv/Summoner/Present";
 
     public MainPage()
     {
@@ -24,35 +26,35 @@ public partial class MainPage : ContentPage
     private void OnReaderReady(ReaderReadyArgs args)
     {
         _readerName = args.ReaderName;
-        ViewModel.CanWrite = args.IsReady;
-    }
-
-    void OnNfcTagScanned(ParameterAssignmentBase parameter)
-    {
-        SetVrcParameter(parameter);
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            ViewModel.Name = parameter.Name;
-            switch (parameter)
-            {
-                case ParameterAssignment<int> intAssignment:
-                    ViewModel.Type = ParameterType.Int;
-                    ViewModel.IntValue = intAssignment.Value;
-                    break;
-                case ParameterAssignment<float> floatAssignment:
-                    ViewModel.Type = ParameterType.Float;
-                    ViewModel.FloatValue = floatAssignment.Value;
-                    break;
-                case ParameterAssignment<bool> boolAssignment:
-                    ViewModel.Type = ParameterType.Bool;
-                    ViewModel.BoolValue = boolAssignment.Value;
-                    TrueRadio.IsChecked = boolAssignment.Value;
-                    FalseRadio.IsChecked = !boolAssignment.Value;
-                    break;
-            }
+            ViewModel.CanWrite = args.IsReady;
+        });
+        OscParameter.SendAvatarParameter(PresentParameterName, args.IsReady);
+    }
 
+    private void OnNfcTagScanned(IList<ParameterAssignmentBase> parameters)
+    {
+        SetVrcParameter(parameters);
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            ViewModel.Load(parameters);
             OnViewModelChange();
         });
+    }
+    
+    private static void SetVrcParameter(IEnumerable<ParameterAssignmentBase> assignments)
+    {
+        foreach (var assignment in assignments)
+            SetVrcParameter(assignment);
+        SendTriggerEvent();
+    }
+
+    private static async void SendTriggerEvent()
+    {
+        OscParameter.SendAvatarParameter(TriggerParameterName, true);
+        await Task.Delay(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
+        OscParameter.SendAvatarParameter(TriggerParameterName, false);
     }
 
     private static void SetVrcParameter(ParameterAssignmentBase assignment)
@@ -77,24 +79,20 @@ public partial class MainPage : ContentPage
     void OnButtonClicked(object sender, EventArgs args)
     {
         if (ViewModel.IsValid)
-        {
-            SetVrcParameter(ViewModel.GetAssignment());
-        }
+            SetVrcParameter(ViewModel.Collection.Select(i => i.GetAssignment()));
     }
 
     void OnViewModelChange()
     {
         SubmitButton.IsEnabled = ViewModel.IsValid;
-        FloatInputLayout.IsVisible = ViewModel.Type == ParameterType.Float;
-        IntInputLayout.IsVisible = ViewModel.Type == ParameterType.Int;
-        BoolInputLayout.IsVisible = ViewModel.Type == ParameterType.Bool;
+        WriteButton.IsEnabled = ViewModel.IsValid && ViewModel.CanWrite;
     }
 
     private void OnWriteClicked(object sender, EventArgs e)
     {
         try
         {
-            _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
+            _nfcSummoner.WriteTag(ViewModel.Collection.Select(v => v.GetAssignment()).ToList(), _readerName);
             var toast = Toast.Make("NFC tag was written successfully!");
             toast.Show();
         }
@@ -103,5 +101,42 @@ public partial class MainPage : ContentPage
             DisplayAlert("Write Failure",
                 "Unable to write NFC tag and I'm too lazy to put in troubleshooting info just yet.", "Mega Oof");
         }
+    }
+
+    private void OnAddClicked(object sender, EventArgs e)
+    {
+        var model = new ParameterViewModel();
+        ViewModel.Collection.Add(model);
+        OpenEditor(model);
+    }
+
+    private async void OpenEditor(ParameterViewModel model)
+    {
+        await Navigation.PushModalAsync(new ParameterEditorPage
+        {
+            BindingContext = model
+        }, true);
+    }
+
+    private void OnRemoveClicked(object sender, EventArgs e)
+    {
+        var button = sender as BindableObject;
+        if (button?.BindingContext is not ParameterViewModel entry)
+            return;
+        ViewModel.Collection.Remove(entry);
+        OnViewModelChange();
+    }
+
+    private void OnEditClicked(object sender, EventArgs e)
+    {
+        var button = sender as BindableObject;
+        if (button?.BindingContext is ParameterViewModel entry)
+            OpenEditor(entry);
+    }
+
+    protected override void OnAppearing()
+    {
+        OnViewModelChange();
+        base.OnAppearing();
     }
 }
