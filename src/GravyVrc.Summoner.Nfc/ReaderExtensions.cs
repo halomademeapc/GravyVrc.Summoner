@@ -19,13 +19,19 @@ internal static class ReaderExtensions
         return new Uid(response.Content.ToArray());
     }
 
-    internal static NfcUriData Read(this ICardReader reader, byte block, byte length, int blockSize = 4,
-        int packetSize = 16,
-        byte readClass = 0xff)
+    /// <summary>
+    /// Read data from an NFC tag
+    /// </summary>
+    /// <param name="reader">Reader to access</param>
+    /// <param name="block">Block to start reading at</param>
+    /// <param name="length">Length (in bytes) of content to read</param>
+    /// <param name="blockSize">Size of each block (in bytes)</param>
+    internal static NfcUriData Read(this ICardReader reader, byte block, int length, int blockSize = 4,
+        byte packetSize = 16, byte readClass = 0xff)
     {
         return new(length > packetSize
             ? ReadChunked(reader, block, length, blockSize, packetSize, readClass)
-            : ReadSingle(reader, block, length, readClass));
+            : ReadSingle(reader, block, (byte)length, readClass));
 
 
         /*static IEnumerable<byte> ReadChunked(ICardReader reader, byte block, int length, int blockSize = 4, int packetSize = 16,
@@ -39,8 +45,8 @@ internal static class ReaderExtensions
             }
         }*/
 
-        ReadOnlySpan<byte> ReadChunked(ICardReader reader, byte blockNumber, byte length, int blockSize = 4,
-            int packetSize = 16, byte readClass = 0xff)
+        ReadOnlySpan<byte> ReadChunked(ICardReader reader, byte blockNumber, int length, int blockSize = 4,
+            byte packetSize = 16, byte readClass = 0xff)
         {
             // just copying from nfc-pcsc right now, too lazy to read all of this
             var p = DivideRoundUp(length, packetSize);

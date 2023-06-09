@@ -14,7 +14,7 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         ViewModel.PropertyChanged += (_, _) => OnViewModelChange();
-        //_nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
+        _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
         _nfcSummoner.ReaderReady += OnReaderReady;
         OnViewModelChange();
         _nfcSummoner.StartListening();
@@ -26,33 +26,21 @@ public partial class MainPage : ContentPage
         ViewModel.CanWrite = args.IsReady;
     }
 
-    /*void OnNfcTagScanned(ParameterAssignmentBase parameter)
+    private void OnNfcTagScanned(IList<ParameterAssignmentBase> parameters)
     {
-        SetVrcParameter(parameter);
+        SetVrcParameter(parameters);
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            ViewModel.Name = parameter.Name;
-            switch (parameter)
-            {
-                case ParameterAssignment<int> intAssignment:
-                    ViewModel.Type = ParameterType.Int;
-                    ViewModel.IntValue = intAssignment.Value;
-                    break;
-                case ParameterAssignment<float> floatAssignment:
-                    ViewModel.Type = ParameterType.Float;
-                    ViewModel.FloatValue = floatAssignment.Value;
-                    break;
-                case ParameterAssignment<bool> boolAssignment:
-                    ViewModel.Type = ParameterType.Bool;
-                    ViewModel.BoolValue = boolAssignment.Value;
-                    TrueRadio.IsChecked = boolAssignment.Value;
-                    FalseRadio.IsChecked = !boolAssignment.Value;
-                    break;
-            }
-
+            ViewModel.Load(parameters);
             OnViewModelChange();
         });
-    }*/
+    }
+    
+    private static void SetVrcParameter(IEnumerable<ParameterAssignmentBase> assignments)
+    {
+        foreach (var assignment in assignments)
+            SetVrcParameter(assignment);
+    }
 
     private static void SetVrcParameter(ParameterAssignmentBase assignment)
     {
@@ -76,9 +64,7 @@ public partial class MainPage : ContentPage
     void OnButtonClicked(object sender, EventArgs args)
     {
         if (ViewModel.IsValid)
-        {
-            // SetVrcParameter(ViewModel.GetAssignment());
-        }
+            SetVrcParameter(ViewModel.Collection.Select(i => i.GetAssignment()));
     }
 
     void OnViewModelChange()
@@ -91,7 +77,7 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            // _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
+            _nfcSummoner.WriteTag(ViewModel.Collection.Select(v => v.GetAssignment()).ToList(), _readerName);
             var toast = Toast.Make("NFC tag was written successfully!");
             toast.Show();
         }

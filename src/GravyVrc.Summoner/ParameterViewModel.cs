@@ -80,13 +80,6 @@ public class ParameterViewModel : INotifyPropertyChanged
     };
 }
 
-public enum ParameterType
-{
-    Int,
-    Bool,
-    Float
-}
-
 internal class ParameterListViewModel : INotifyPropertyChanged
 {
     private bool _canWrite;
@@ -114,5 +107,27 @@ internal class ParameterListViewModel : INotifyPropertyChanged
         field = value;
         OnPropertyChanged(propertyName);
         return true;
+    }
+
+    public void Load(IEnumerable<ParameterAssignmentBase> items)
+    {
+        Collection.Clear();
+        foreach (var item in items)
+        {
+            Collection.Add(new ParameterViewModel
+            {
+                Type = item switch
+                {
+                    ParameterAssignment<int> => ParameterType.Int,
+                    ParameterAssignment<float> => ParameterType.Float,
+                    ParameterAssignment<bool> => ParameterType.Bool,
+                    _ => throw new NotSupportedException($"Cannot parse assignment for type {item.GetType()}")
+                },
+                IntValue = item is ParameterAssignment<int> intAssignment ? intAssignment.Value : default,
+                FloatValue = item is ParameterAssignment<float> floatAssignment ? floatAssignment.Value : default,
+                BoolValue = item is ParameterAssignment<bool> boolAssignment ? boolAssignment.Value : default,
+                Name = item.Name
+            });
+        }
     }
 }
