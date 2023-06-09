@@ -42,7 +42,8 @@ public partial class NfcSummoner : IDisposable
         var monitorFactory = MonitorFactory.Instance;
         _monitor = monitorFactory.Create(SCardScope.System);
         _monitor.StatusChanged += MonitorOnStatusChanged;
-        _monitor.Start(readers);
+        if (readers.Any())
+            _monitor.Start(readers);
     }
 
     public void WriteTag(ParameterAssignmentBase assignment, string readerName)

@@ -6,7 +6,7 @@ using CommunityToolkit.Maui.Core;
 
 namespace GravyVrc.Summoner;
 
-public partial class MainPage : ContentPage
+public partial class MainPage : ContentPage, IModalSpawner
 {
     private readonly NfcSummoner _nfcSummoner = new();
     private string _readerName = null;
@@ -15,7 +15,7 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         ViewModel.PropertyChanged += (_, _) => OnViewModelChange();
-        _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
+        //_nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
         _nfcSummoner.ReaderReady += OnReaderReady;
         OnViewModelChange();
         _nfcSummoner.StartListening();
@@ -27,7 +27,7 @@ public partial class MainPage : ContentPage
         ViewModel.CanWrite = args.IsReady;
     }
 
-    void OnNfcTagScanned(ParameterAssignmentBase parameter)
+    /*void OnNfcTagScanned(ParameterAssignmentBase parameter)
     {
         SetVrcParameter(parameter);
         MainThread.BeginInvokeOnMainThread(() =>
@@ -53,7 +53,7 @@ public partial class MainPage : ContentPage
 
             OnViewModelChange();
         });
-    }
+    }*/
 
     private static void SetVrcParameter(ParameterAssignmentBase assignment)
     {
@@ -78,23 +78,21 @@ public partial class MainPage : ContentPage
     {
         if (ViewModel.IsValid)
         {
-            SetVrcParameter(ViewModel.GetAssignment());
+            // SetVrcParameter(ViewModel.GetAssignment());
         }
     }
 
     void OnViewModelChange()
     {
         SubmitButton.IsEnabled = ViewModel.IsValid;
-        FloatInputLayout.IsVisible = ViewModel.Type == ParameterType.Float;
-        IntInputLayout.IsVisible = ViewModel.Type == ParameterType.Int;
-        BoolInputLayout.IsVisible = ViewModel.Type == ParameterType.Bool;
+        WriteButton.IsEnabled = ViewModel.IsValid && ViewModel.CanWrite;
     }
 
     private void OnWriteClicked(object sender, EventArgs e)
     {
         try
         {
-            _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
+            // _nfcSummoner.WriteTag(ViewModel.GetAssignment(), _readerName);
             var toast = Toast.Make("NFC tag was written successfully!");
             toast.Show();
         }
@@ -103,5 +101,41 @@ public partial class MainPage : ContentPage
             DisplayAlert("Write Failure",
                 "Unable to write NFC tag and I'm too lazy to put in troubleshooting info just yet.", "Mega Oof");
         }
+    }
+
+    private void OnAddClicked(object sender, EventArgs e)
+    {
+        var model = new ParameterViewModel();
+        ViewModel.Collection.Add(model);
+        OpenEditor(model);
+    }
+
+    private async void OpenEditor(ParameterViewModel model)
+    {
+        await Navigation.PushModalAsync(new ParameterEditorPage
+        {
+            BindingContext = model
+        }, true);
+    }
+
+    private void OnRemoveClicked(object sender, EventArgs e)
+    {
+        var button = sender as Button;
+        if (button?.BindingContext is not ParameterViewModel entry)
+            return;
+        ViewModel.Collection.Remove(entry);
+        OnViewModelChange();
+    }
+
+    private void OnEditClicked(object sender, EventArgs e)
+    {
+        var button = sender as Button;
+        if (button?.BindingContext is ParameterViewModel entry)
+            OpenEditor(entry);
+    }
+
+    public void OnModalClosed()
+    {
+        //Application.DoEvents();
     }
 }

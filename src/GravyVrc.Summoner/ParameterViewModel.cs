@@ -1,10 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using GravyVrc.Summoner.Core;
 
 namespace GravyVrc.Summoner;
 
-internal class ParameterViewModel : INotifyPropertyChanged
+public class ParameterViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -13,88 +14,47 @@ internal class ParameterViewModel : INotifyPropertyChanged
     private bool _boolValue;
     private float _floatValue;
     private ParameterType _type;
-    private bool _canWrite;
 
     public string Name
     {
         get => _name;
-        set
-        {
-            if (value != _name)
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+        set => SetField(ref _name, value);
     }
 
     public int IntValue
     {
         get => _intValue;
-        set
-        {
-            if (value != _intValue)
-            {
-                _intValue = value;
-                OnPropertyChanged();
-            }
-        }
+        set => SetField(ref _intValue, value);
     }
 
     public bool BoolValue
     {
         get => _boolValue;
-        set
-        {
-            if (value != _boolValue)
-            {
-                _boolValue = value;
-                OnPropertyChanged();
-            }
-        }
+        set => SetField(ref _boolValue, value);
     }
 
     public float FloatValue
     {
         get => _floatValue;
-        set
-        {
-            if (Math.Abs(value - _floatValue) > .000001)
-            {
-                _floatValue = value;
-                OnPropertyChanged();
-            }
-        }
+        set => SetField(ref _floatValue, value);
     }
 
     public ParameterType Type
     {
         get => _type;
-        set
-        {
-            if (value != _type)
-            {
-                _type = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    public bool CanWrite
-    {
-        get => _canWrite;
-        set
-        {
-            if (value != _canWrite)
-            {
-                _canWrite = value;
-                OnPropertyChanged();
-            }
-        }
+        set => SetField(ref _type, value);
     }
 
     public void OnPropertyChanged([CallerMemberName] string name = "") =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
 
     public bool IsValid => this switch
     {
@@ -110,6 +70,14 @@ internal class ParameterViewModel : INotifyPropertyChanged
         ParameterType.Float => new ParameterAssignment<float> { Name = Name, Value = FloatValue },
         _ => throw new ArgumentException()
     };
+
+    public object Value => Type switch
+    {
+        ParameterType.Int => IntValue,
+        ParameterType.Bool => BoolValue,
+        ParameterType.Float => FloatValue,
+        _ => throw new ArgumentException()
+    };
 }
 
 public enum ParameterType
@@ -117,4 +85,34 @@ public enum ParameterType
     Int,
     Bool,
     Float
+}
+
+internal class ParameterListViewModel : INotifyPropertyChanged
+{
+    private bool _canWrite;
+
+    public bool CanWrite
+    {
+        get => _canWrite;
+        set => SetField(ref _canWrite, value);
+    }
+
+    public bool IsValid => Collection.Any() && Collection.All(vm => vm.IsValid);
+
+    public ObservableCollection<ParameterViewModel> Collection { get; } = new();
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
 }
