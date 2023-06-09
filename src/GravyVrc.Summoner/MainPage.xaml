@@ -3,6 +3,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GravyVrc.Summoner"
+             xmlns:fluent="clr-namespace:MauiIcons.Fluent;assembly=MauiIcons.Fluent"
              x:Class="GravyVrc.Summoner.MainPage">
 
     <ContentPage.BindingContext>
@@ -28,34 +29,50 @@
                 FontSize="26" />
 
             <ListView x:Name="ParameterList"
-                ItemsSource="{Binding Collection}">
+                      SelectionMode="None"
+                      ItemsSource="{Binding Collection}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Grid Padding="10">
+                            <Grid ColumnSpacing="6"
+                                  RowSpacing="10"
+                                  Padding="10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Column="0"
                                        Text="{Binding Name}"
-                                       FontAttributes="Bold" />
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center" />
                                 <Label Grid.Column="1"
-                                       Text="{Binding Type}" />
+                                       Text="{Binding Type}"
+                                       VerticalOptions="Center" />
                                 <Label Grid.Column="2"
-                                       Text="{Binding Value}" />
-                                <Button Grid.Column="3"
-                                        Text="✏"
-                                        Clicked="OnEditClicked" />
-                                <Button Grid.Column="4"
-                                        Text="❌"
-                                        Clicked="OnRemoveClicked" />
+                                       Text="{Binding Value}"
+                                       VerticalOptions="Center" />
+                                <ImageButton Grid.Column="3"
+                                             Aspect="Center"
+                                             Padding="2"
+                                             Source="{fluent:Icon Icon=Edit48, IconSize=12 }"
+                                             ToolTipProperties.Text="Edit"
+                                             Clicked="OnEditClicked"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Center" />
+                                <ImageButton Grid.Column="4"
+                                             Aspect="Center"
+                                             Padding="2"
+                                             Source="{fluent:Icon Icon=Delete48, IconSize=12 }"
+                                             ToolTipProperties.Text="Remove"
+                                             Clicked="OnRemoveClicked"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Center" />
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
@@ -63,6 +80,7 @@
             </ListView>
             <Button x:Name="AddButton"
                     Text="Add Item"
+                    ImageSource="{fluent:Icon Icon=Add28, IconSize=16 }"
                     HorizontalOptions="End"
                     Clicked="OnAddClicked" />
 
@@ -70,9 +88,11 @@
                 <Button x:Name="WriteButton"
                         Text="Write Tag"
                         Clicked="OnWriteClicked"
+                        ImageSource="{fluent:Icon Icon=DeveloperBoardLightning20, IconSize=16 }"
                         IsEnabled="{Binding CanWrite}" />
                 <Button x:Name="SubmitButton"
                         Text="Set Value"
+                        ImageSource="{fluent:Icon Icon=Send28, IconSize=16 }"
                         Clicked="OnButtonClicked" />
             </HorizontalStackLayout>
 

@@ -2,11 +2,10 @@
 using GravyVrc.Summoner.Core;
 using GravyVrc.Summoner.Nfc;
 using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
 
 namespace GravyVrc.Summoner;
 
-public partial class MainPage : ContentPage, IModalSpawner
+public partial class MainPage : ContentPage
 {
     private readonly NfcSummoner _nfcSummoner = new();
     private string _readerName = null;
@@ -120,7 +119,7 @@ public partial class MainPage : ContentPage, IModalSpawner
 
     private void OnRemoveClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
+        var button = sender as BindableObject;
         if (button?.BindingContext is not ParameterViewModel entry)
             return;
         ViewModel.Collection.Remove(entry);
@@ -129,13 +128,8 @@ public partial class MainPage : ContentPage, IModalSpawner
 
     private void OnEditClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
+        var button = sender as BindableObject;
         if (button?.BindingContext is ParameterViewModel entry)
             OpenEditor(entry);
-    }
-
-    public void OnModalClosed()
-    {
-        //Application.DoEvents();
     }
 }

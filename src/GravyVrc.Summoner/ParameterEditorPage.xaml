@@ -3,6 +3,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GravyVrc.Summoner"
+             xmlns:fluent="clr-namespace:MauiIcons.Fluent;assembly=MauiIcons.Fluent"
              x:Class="GravyVrc.Summoner.ParameterEditorPage">
     <ContentPage.BindingContext>
         <local:ParameterViewModel x:Name="ViewModel" />
@@ -13,6 +14,11 @@
             Spacing="25"
             Padding="30,0"
             VerticalOptions="Center">
+            <Label
+                Text="Edit Parameter"
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="26" />
+            
             <VerticalStackLayout>
                 <Label
                     Text="Parameter Name"
@@ -78,6 +84,7 @@
             
             <Button x:Name="SaveButton"
                     Text="Save"
+                    ImageSource="{fluent:Icon Icon=Save28, IconSize=12 }"
                     Clicked="OnSaveClicked"
                     HorizontalOptions="End"
                     IsEnabled="{Binding IsValid}"/>

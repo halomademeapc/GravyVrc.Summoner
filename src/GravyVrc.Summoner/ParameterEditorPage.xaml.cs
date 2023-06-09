@@ -28,6 +28,13 @@ public partial class ParameterEditorPage : ContentPage
         FloatInputLayout.IsVisible = ViewModel.Type == ParameterType.Float;
         IntInputLayout.IsVisible = ViewModel.Type == ParameterType.Int;
         BoolInputLayout.IsVisible = ViewModel.Type == ParameterType.Bool;
+        if (ViewModel.Type == ParameterType.Bool)
+        {
+            TrueRadio.IsChecked = ViewModel.BoolValue;
+            FalseRadio.IsChecked = !ViewModel.BoolValue;
+        }
+
+        SaveButton.IsEnabled = ViewModel.IsValid;
     }
 
     protected override bool OnBackButtonPressed() => false;
