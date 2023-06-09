@@ -24,10 +24,14 @@
                 HorizontalOptions="Center" />
 
             <Label
-                Text="Scan an NFC tag or set the value manually"
+                Text="Scan an NFC tag or set some values manually"
                 SemanticProperties.HeadingLevel="Level1"
                 FontSize="26" />
 
+            <Label
+                Text="Parameters"
+                SemanticProperties.HeadingLevel="Level2"
+                FontSize="16" />
             <ListView x:Name="ParameterList"
                       SelectionMode="None"
                       ItemsSource="{Binding Collection}">
@@ -41,9 +45,8 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
@@ -52,12 +55,9 @@
                                        FontAttributes="Bold"
                                        VerticalOptions="Center" />
                                 <Label Grid.Column="1"
-                                       Text="{Binding Type}"
-                                       VerticalOptions="Center" />
-                                <Label Grid.Column="2"
                                        Text="{Binding Value}"
                                        VerticalOptions="Center" />
-                                <ImageButton Grid.Column="3"
+                                <ImageButton Grid.Column="2"
                                              Aspect="Center"
                                              Padding="2"
                                              Source="{fluent:Icon Icon=Edit48, IconSize=12 }"
@@ -65,7 +65,7 @@
                                              Clicked="OnEditClicked"
                                              HorizontalOptions="End"
                                              VerticalOptions="Center" />
-                                <ImageButton Grid.Column="4"
+                                <ImageButton Grid.Column="3"
                                              Aspect="Center"
                                              Padding="2"
                                              Source="{fluent:Icon Icon=Delete48, IconSize=12 }"
@@ -79,7 +79,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             <Button x:Name="AddButton"
-                    Text="Add Item"
+                    Text="Add Parameter"
                     ImageSource="{fluent:Icon Icon=Add28, IconSize=16 }"
                     HorizontalOptions="End"
                     Clicked="OnAddClicked" />
@@ -89,7 +89,7 @@
                         Text="Write Tag"
                         Clicked="OnWriteClicked"
                         ImageSource="{fluent:Icon Icon=DeveloperBoardLightning20, IconSize=16 }"
-                         />
+                        IsEnabled="{Binding CanWrite}" />
                 <Button x:Name="SubmitButton"
                         Text="Set Value"
                         ImageSource="{fluent:Icon Icon=Send28, IconSize=16 }"

@@ -10,6 +10,9 @@ public partial class MainPage : ContentPage
     private readonly NfcSummoner _nfcSummoner = new();
     private string _readerName = null;
 
+    private const string TriggerParameterName = "Gv/Summoner/Triggered";
+    private const string PresentParameterName = "Gv/Summoner/Present";
+
     public MainPage()
     {
         InitializeComponent();
@@ -27,6 +30,7 @@ public partial class MainPage : ContentPage
         {
             ViewModel.CanWrite = args.IsReady;
         });
+        OscParameter.SendAvatarParameter(PresentParameterName, args.IsReady);
     }
 
     private void OnNfcTagScanned(IList<ParameterAssignmentBase> parameters)
@@ -43,6 +47,14 @@ public partial class MainPage : ContentPage
     {
         foreach (var assignment in assignments)
             SetVrcParameter(assignment);
+        SendTriggerEvent();
+    }
+
+    private static async void SendTriggerEvent()
+    {
+        OscParameter.SendAvatarParameter(TriggerParameterName, true);
+        await Task.Delay(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
+        OscParameter.SendAvatarParameter(TriggerParameterName, false);
     }
 
     private static void SetVrcParameter(ParameterAssignmentBase assignment)
@@ -73,7 +85,7 @@ public partial class MainPage : ContentPage
     void OnViewModelChange()
     {
         SubmitButton.IsEnabled = ViewModel.IsValid;
-        WriteButton.IsEnabled = true;// = ViewModel.IsValid && ViewModel.CanWrite;
+        WriteButton.IsEnabled = ViewModel.IsValid && ViewModel.CanWrite;
     }
 
     private void OnWriteClicked(object sender, EventArgs e)
@@ -120,5 +132,11 @@ public partial class MainPage : ContentPage
         var button = sender as BindableObject;
         if (button?.BindingContext is ParameterViewModel entry)
             OpenEditor(entry);
+    }
+
+    protected override void OnAppearing()
+    {
+        OnViewModelChange();
+        base.OnAppearing();
     }
 }
