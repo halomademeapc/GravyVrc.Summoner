@@ -78,8 +78,8 @@ internal static class ReaderExtensions
             return response.Content;
         }
 
-        int DivideRoundUp(int dividend, int divisor) => (dividend + (divisor - 1)) / divisor;
     }
+        static int DivideRoundUp(int dividend, int divisor) => (dividend + (divisor - 1)) / divisor;
 
     internal static void Write(this ICardReader reader, byte block, byte[] data, byte blockSize = 4)
     {

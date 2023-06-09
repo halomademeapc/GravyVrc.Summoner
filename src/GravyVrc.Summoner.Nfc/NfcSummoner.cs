@@ -17,6 +17,7 @@ public partial class NfcSummoner : IDisposable
     public delegate void ReaderReadyEventHandler(ReaderReadyArgs args);
 
     private static readonly byte[] Signature = { 69, 4, 2, 0 };
+    private static readonly byte[] BlankBlock = { 0, 0, 0, 0 };
     private const byte BlockSize = 4;
     private const byte SignatureBlock = 4;
     private const byte HeaderBlock = 5;
@@ -24,9 +25,6 @@ public partial class NfcSummoner : IDisposable
 
     private ISCardMonitor? _monitor;
     private readonly ISCardContext _context;
-
-    [GeneratedRegex(@"^gravyvrc-summoner:((int)\/(-?\d+)|(bool)\/(true|false)|(float)\/(-?\d+\.?\d*))\/(\S+)$")]
-    private static partial Regex ParameterRgx();
 
     public NfcSummoner()
     {
@@ -56,7 +54,7 @@ public partial class NfcSummoner : IDisposable
         var header = new Header(data.Length);
         reader.Write(SignatureBlock, Signature);
         reader.Write(HeaderBlock, header.GetBytes());
-        reader.Write(ContentBlock, data);
+        reader.Write(ContentBlock, data.Concat(BlankBlock).ToArray());
     }
 
     private void MonitorOnStatusChanged(object sender, StatusChangeEventArgs e)

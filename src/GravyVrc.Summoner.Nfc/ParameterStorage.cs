@@ -4,7 +4,7 @@ using MessagePack;
 namespace GravyVrc.Summoner.Nfc;
 
 [MessagePackObject]
-internal class ParameterStorage
+public class ParameterStorage
 {
     [Key(0)]
     public ParameterType Type { get; set; }

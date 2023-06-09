@@ -89,7 +89,7 @@
                         Text="Write Tag"
                         Clicked="OnWriteClicked"
                         ImageSource="{fluent:Icon Icon=DeveloperBoardLightning20, IconSize=16 }"
-                        IsEnabled="{Binding CanWrite}" />
+                         />
                 <Button x:Name="SubmitButton"
                         Text="Set Value"
                         ImageSource="{fluent:Icon Icon=Send28, IconSize=16 }"

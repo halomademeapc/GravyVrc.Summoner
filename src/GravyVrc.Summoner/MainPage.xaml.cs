@@ -23,7 +23,10 @@ public partial class MainPage : ContentPage
     private void OnReaderReady(ReaderReadyArgs args)
     {
         _readerName = args.ReaderName;
-        ViewModel.CanWrite = args.IsReady;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            ViewModel.CanWrite = args.IsReady;
+        });
     }
 
     private void OnNfcTagScanned(IList<ParameterAssignmentBase> parameters)
@@ -70,7 +73,7 @@ public partial class MainPage : ContentPage
     void OnViewModelChange()
     {
         SubmitButton.IsEnabled = ViewModel.IsValid;
-        WriteButton.IsEnabled = ViewModel.IsValid && ViewModel.CanWrite;
+        WriteButton.IsEnabled = true;// = ViewModel.IsValid && ViewModel.CanWrite;
     }
 
     private void OnWriteClicked(object sender, EventArgs e)
