@@ -349,3 +349,5 @@ healthchecksdb
 MigrationBackup/
 
 src/GravyVrc.Summoner.Nfc/Generated/
+
+assets/RECOVER_logo.fla
