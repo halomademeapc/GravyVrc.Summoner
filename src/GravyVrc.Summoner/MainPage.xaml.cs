@@ -26,10 +26,7 @@ public partial class MainPage : ContentPage
     private void OnReaderReady(ReaderReadyArgs args)
     {
         _readerName = args.ReaderName;
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            ViewModel.CanWrite = args.IsReady;
-        });
+        MainThread.BeginInvokeOnMainThread(() => { ViewModel.CanWrite = args.IsReady; });
         OscParameter.SendAvatarParameter(PresentParameterName, args.IsReady);
     }
 
@@ -42,7 +39,7 @@ public partial class MainPage : ContentPage
             OnViewModelChange();
         });
     }
-    
+
     private static void SetVrcParameter(IEnumerable<ParameterAssignmentBase> assignments)
     {
         foreach (var assignment in assignments)
@@ -115,7 +112,7 @@ public partial class MainPage : ContentPage
         await Navigation.PushModalAsync(new ParameterEditorPage
         {
             BindingContext = model
-        }, true);
+        });
     }
 
     private void OnRemoveClicked(object sender, EventArgs e)
@@ -138,5 +135,11 @@ public partial class MainPage : ContentPage
     {
         OnViewModelChange();
         base.OnAppearing();
+    }
+
+    private void OnAboutClicked(object sender, EventArgs e)
+    {
+        //Shell.Current.GoToAsync("//About");
+        Navigation.PushAsync(new AboutPage());
     }
 }

@@ -4,11 +4,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GravyVrc.Summoner"
              xmlns:fluent="clr-namespace:MauiIcons.Fluent;assembly=MauiIcons.Fluent"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="GravyVrc.Summoner.MainPage">
 
     <ContentPage.BindingContext>
         <local:ParameterListViewModel x:Name="ViewModel" />
     </ContentPage.BindingContext>
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto"
+              ColumnSpacing="12"
+              Padding="10,0">
+            <Label Grid.Column="0"
+                   Text="Summoner"
+                   FontSize="Large" />
+            <ImageButton Grid.Column="1"
+                         Aspect="Center"
+                         Padding="2"
+                         Source="{fluent:Icon Icon=Info28, IconSize=22 }"
+                         ToolTipProperties.Text="About"
+                         Clicked="OnAboutClicked"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center" />
+        </Grid>
+    </Shell.TitleView>
 
 
     <ScrollView>
@@ -63,7 +81,7 @@
                                              Source="{fluent:Icon Icon=Edit48, IconSize=12 }"
                                              ToolTipProperties.Text="Edit"
                                              Clicked="OnEditClicked"
-                                             HorizontalOptions="End"
+                                             HorizontalOptions="Center"
                                              VerticalOptions="Center" />
                                 <ImageButton Grid.Column="3"
                                              Aspect="Center"
@@ -71,7 +89,7 @@
                                              Source="{fluent:Icon Icon=Delete48, IconSize=12 }"
                                              ToolTipProperties.Text="Remove"
                                              Clicked="OnRemoveClicked"
-                                             HorizontalOptions="End"
+                                             HorizontalOptions="Center"
                                              VerticalOptions="Center" />
                             </Grid>
                         </ViewCell>

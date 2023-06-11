@@ -64,5 +64,10 @@
 	  <ProjectReference Include="..\GravyVrc.Summoner.Nfc\GravyVrc.Summoner.Nfc.csproj" />
 	</ItemGroup>
 
-	<Target Name="_GenerateAppxPackage" Condition="'$(AppxPackage)' == 'true'" />
+	<ItemGroup>
+	  <MauiPlatformSpecificFolder Remove="Platforms\Android\" />
+	  <MauiPlatformSpecificFolder Remove="Platforms\iOS\" />
+	  <MauiPlatformSpecificFolder Remove="Platforms\MacCatalyst\" />
+	  <MauiPlatformSpecificFolder Remove="Platforms\Tizen\" />
+	</ItemGroup>
 </Project>

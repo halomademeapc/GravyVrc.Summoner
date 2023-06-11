@@ -2,6 +2,7 @@
 using MauiIcons.Fluent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using Microsoft.Maui.Platform;
 #if WINDOWS10_0_17763_0_OR_GREATER
 using GravyVrc.Summoner.Platforms.Windows;
 #endif
@@ -35,7 +36,8 @@ public static class MauiProgram
                 wndLifeCycleBuilder.OnWindowCreated(window =>
                 {
                     window.TryMicaOrAcrylic();
-                    window.Resize(400, 800);
+                    var scale = window.GetDisplayDensity();
+                    window.Resize((int)(400 * scale), (int)(800 * scale));
                 });
             });
 #endif
