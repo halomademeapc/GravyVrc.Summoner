@@ -4,7 +4,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GravyVrc.Summoner"
              xmlns:fluent="clr-namespace:MauiIcons.Fluent;assembly=MauiIcons.Fluent"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="GravyVrc.Summoner.MainPage">
 
     <ContentPage.BindingContext>
@@ -20,7 +19,7 @@
             <ImageButton Grid.Column="1"
                          Aspect="Center"
                          Padding="2"
-                         Source="{fluent:Icon Icon=Info28, IconSize=22 }"
+                         Source="{fluent:Icon Icon=Info28, IconSize=20 }"
                          ToolTipProperties.Text="About"
                          Clicked="OnAboutClicked"
                          HorizontalOptions="Center"
@@ -30,91 +29,96 @@
 
 
     <ScrollView>
-        <VerticalStackLayout
-            Spacing="25"
-            Padding="30,0"
-            VerticalOptions="Center">
+        <Grid
+            RowDefinitions="Auto,*,Auto"
+            RowSpacing="25"
+            Padding="10">
 
-            <Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
-                HorizontalOptions="Center" />
+            <Label Grid.Row="0"
+                   Text="Scan an NFC tag or set some values manually"
+                   SemanticProperties.HeadingLevel="Level1"
+                   FontSize="22" />
 
-            <Label
-                Text="Scan an NFC tag or set some values manually"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="26" />
+            <VerticalStackLayout Grid.Row="1">
+                <Label
+                    Text="Parameters"
+                    SemanticProperties.HeadingLevel="Level2"
+                    FontSize="16" />
+                <ListView x:Name="ParameterList"
+                          Grid.Row="1"
+                          SelectionMode="None"
+                          ItemsSource="{Binding Collection}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuFlyoutItem Text="Edit" Clicked="OnEditClicked"/>
+                                    <MenuFlyoutItem Text="Remove" Clicked="OnRemoveClicked"/>
+                                </ViewCell.ContextActions>
+                                <Grid ColumnSpacing="6"
+                                      RowSpacing="10"
+                                      Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Name}"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Value}"
+                                           VerticalOptions="Center" />
+                                    <ImageButton Grid.Column="2"
+                                                 Aspect="Center"
+                                                 Padding="2"
+                                                 Source="{fluent:Icon Icon=Edit48, IconSize=12 }"
+                                                 ToolTipProperties.Text="Edit"
+                                                 Clicked="OnEditClicked"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center" />
+                                    <ImageButton Grid.Column="3"
+                                                 Aspect="Center"
+                                                 Padding="2"
+                                                 Source="{fluent:Icon Icon=Delete48, IconSize=12 }"
+                                                 ToolTipProperties.Text="Remove"
+                                                 Clicked="OnRemoveClicked"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center" />
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button x:Name="AddButton"
+                        Text="Add Parameter"
+                        ImageSource="{fluent:Icon Icon=Add28, IconSize=16 }"
+                        HorizontalOptions="End"
+                        Clicked="OnAddClicked" />
+            </VerticalStackLayout>
 
-            <Label
-                Text="Parameters"
-                SemanticProperties.HeadingLevel="Level2"
-                FontSize="16" />
-            <ListView x:Name="ParameterList"
-                      SelectionMode="None"
-                      ItemsSource="{Binding Collection}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Grid ColumnSpacing="6"
-                                  RowSpacing="10"
-                                  Padding="10">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0"
-                                       Text="{Binding Name}"
-                                       FontAttributes="Bold"
-                                       VerticalOptions="Center" />
-                                <Label Grid.Column="1"
-                                       Text="{Binding Value}"
-                                       VerticalOptions="Center" />
-                                <ImageButton Grid.Column="2"
-                                             Aspect="Center"
-                                             Padding="2"
-                                             Source="{fluent:Icon Icon=Edit48, IconSize=12 }"
-                                             ToolTipProperties.Text="Edit"
-                                             Clicked="OnEditClicked"
-                                             HorizontalOptions="Center"
-                                             VerticalOptions="Center" />
-                                <ImageButton Grid.Column="3"
-                                             Aspect="Center"
-                                             Padding="2"
-                                             Source="{fluent:Icon Icon=Delete48, IconSize=12 }"
-                                             ToolTipProperties.Text="Remove"
-                                             Clicked="OnRemoveClicked"
-                                             HorizontalOptions="Center"
-                                             VerticalOptions="Center" />
-                            </Grid>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <Button x:Name="AddButton"
-                    Text="Add Parameter"
-                    ImageSource="{fluent:Icon Icon=Add28, IconSize=16 }"
-                    HorizontalOptions="End"
-                    Clicked="OnAddClicked" />
-
-            <HorizontalStackLayout Spacing="12">
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,*"
+                                   ColumnSpacing="12">
                 <Button x:Name="WriteButton"
+                        Grid.Column="0"
                         Text="Write Tag"
                         Clicked="OnWriteClicked"
                         ImageSource="{fluent:Icon Icon=DeveloperBoardLightning20, IconSize=16 }"
                         IsEnabled="{Binding CanWrite}" />
                 <Button x:Name="SubmitButton"
+                        Grid.Column="1"
                         Text="Set Value"
                         ImageSource="{fluent:Icon Icon=Send28, IconSize=16 }"
                         Clicked="OnButtonClicked" />
-            </HorizontalStackLayout>
+            </Grid>
 
-        </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>

@@ -13,7 +13,7 @@
   <Properties>
     <DisplayName>GravyVRC Summoner</DisplayName>
     <PublisherDisplayName>Alex Griffith</PublisherDisplayName>
-    <Logo>$placeholder$.png</Logo>
+    <Logo>summoner_logo_shaded.png</Logo>
   </Properties>
 
   <Dependencies>

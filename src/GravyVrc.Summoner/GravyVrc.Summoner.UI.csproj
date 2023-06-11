@@ -36,8 +36,8 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-
+		<MauiIcon Include="Resources\AppIcon\summoner_logo_shaded.png" />
+		
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
@@ -69,5 +69,13 @@
 	  <MauiPlatformSpecificFolder Remove="Platforms\iOS\" />
 	  <MauiPlatformSpecificFolder Remove="Platforms\MacCatalyst\" />
 	  <MauiPlatformSpecificFolder Remove="Platforms\Tizen\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\AppIcon\summoner_logo_shaded.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiIcon Include="Resources\AppIcon\summoner_logo_shaded.png" />
 	</ItemGroup>
 </Project>

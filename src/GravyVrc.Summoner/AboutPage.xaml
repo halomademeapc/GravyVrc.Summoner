@@ -12,6 +12,11 @@
                 VerticalOptions="Center"
                 HorizontalOptions="Center"
                 Padding="10">
+                <Image
+                    Source="summoner_logo_shaded.png"
+                    SemanticProperties.Description="Summoner Logo"
+                    HeightRequest="200"
+                    HorizontalOptions="Center" />
                 <Label
                     Text="GravyVRC Summoner"
                     SemanticProperties.HeadingLevel="Level1"
