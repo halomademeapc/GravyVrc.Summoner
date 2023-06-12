@@ -32,11 +32,11 @@ jobs:
       - name: Write key file
         env:
           AUTH: ${{ secrets.PFX }}
+        shell: pwsh
         run: |
-          echo "$AUTH" > src/GravyVrc.Summoner/cert.base64
-          certutil -decode src/GravyVrc.Summoner/cert.base64 src/GravyVrc.Summoner/GravyVrc.Summoner.UI_TemporaryKey.pfx
-          pwd
-          ls
+          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=E4F8F4A4-9089-461E-B691-CEC5470BA7DA" -KeyUsage DigitalSignature -FriendlyName "GitHub Actions Self-Signed Cert" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
+          $password = ConvertTo-SecureString -String "thisdoesnotmatter" -Force -AsPlainText 
+          Export-PfxCertificate -cert $cert -FilePath "src/GravyVrc.Summoner/GravyVrc.Summoner.UI_TemporaryKey.pfx" -Password $password
 
       - name: Setup .NET 7
         uses: actions/setup-dotnet@v2
@@ -50,7 +50,7 @@ jobs:
         run: dotnet restore src/GravyVrc.Summoner/GravyVrc.Summoner.UI.csproj
 
       - name: Build MAUI Windows
-        run: dotnet publish src/GravyVrc.Summoner/GravyVrc.Summoner.UI.csproj -c Release -f net7.0-windows10.0.19041.0 --no-restore -p:PublishReadyToRun=false
+        run: dotnet publish src/GravyVrc.Summoner/GravyVrc.Summoner.UI.csproj -c Release -f net7.0-windows10.0.19041.0 --no-restore -p:PublishReadyToRun=false /p:PackageCertificateKeyFile=GravyVrc.Summoner.UI_TemporaryKey.pfx /p:PackageCertificatePassword="thisdoesnotmatter"
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v3
