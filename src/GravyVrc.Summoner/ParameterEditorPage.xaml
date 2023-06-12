@@ -9,7 +9,7 @@
     <ContentPage.BindingContext>
         <summoner:ParameterViewModel x:Name="ViewModel" />
     </ContentPage.BindingContext>
-
+    
     <ScrollView>
         <VerticalStackLayout
             Spacing="25"

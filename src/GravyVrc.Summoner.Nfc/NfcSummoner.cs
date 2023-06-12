@@ -2,7 +2,6 @@
 using GravyVrc.Summoner.Core;
 using PCSC;
 using PCSC.Monitoring;
-using System.Text.RegularExpressions;
 using MessagePack;
 
 namespace GravyVrc.Summoner.Nfc;

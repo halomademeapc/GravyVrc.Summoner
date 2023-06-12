@@ -13,6 +13,8 @@ public partial class MainPage : ContentPage
     private const string TriggerParameterName = "Gv/Summoner/Triggered";
     private const string PresentParameterName = "Gv/Summoner/Present";
 
+    private bool IsFirstOpen = true;
+
     public MainPage()
     {
         InitializeComponent();
@@ -26,10 +28,7 @@ public partial class MainPage : ContentPage
     private void OnReaderReady(ReaderReadyArgs args)
     {
         _readerName = args.ReaderName;
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            ViewModel.CanWrite = args.IsReady;
-        });
+        MainThread.BeginInvokeOnMainThread(() => { ViewModel.CanWrite = args.IsReady; });
         OscParameter.SendAvatarParameter(PresentParameterName, args.IsReady);
     }
 
@@ -42,12 +41,22 @@ public partial class MainPage : ContentPage
             OnViewModelChange();
         });
     }
-    
+
     private static void SetVrcParameter(IEnumerable<ParameterAssignmentBase> assignments)
     {
         foreach (var assignment in assignments)
             SetVrcParameter(assignment);
         SendTriggerEvent();
+    }
+
+    private async Task TryOpenOnboarding()
+    {
+        if (!IsFirstOpen)
+            return;
+        if (Preferences.Default.Get(WelcomePage.DisableOnboardingPreferenceKey, false))
+            return;
+        await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+        MainThread.BeginInvokeOnMainThread(() => Navigation.PushModalAsync(new WelcomePage()));
     }
 
     private static async void SendTriggerEvent()
@@ -115,7 +124,7 @@ public partial class MainPage : ContentPage
         await Navigation.PushModalAsync(new ParameterEditorPage
         {
             BindingContext = model
-        }, true);
+        });
     }
 
     private void OnRemoveClicked(object sender, EventArgs e)
@@ -136,7 +145,14 @@ public partial class MainPage : ContentPage
 
     protected override void OnAppearing()
     {
+        TryOpenOnboarding();
+        IsFirstOpen = false;
         OnViewModelChange();
         base.OnAppearing();
+    }
+
+    private void OnAboutClicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new AboutPage());
     }
 }

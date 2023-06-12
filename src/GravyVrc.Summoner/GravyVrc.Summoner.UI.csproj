@@ -24,20 +24,20 @@
 		<Company>GravyVRC</Company>
 		<Product>Summoner</Product>
 	  <ApplicationTitle>GravyVRC Summoner</ApplicationTitle>
-	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
 	  <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
-	  <GenerateTestArtifacts>False</GenerateTestArtifacts>
+	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
+	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-	  <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+	  <PackageCertificateKeyFile>GravyVrc.Summoner.UI_TemporaryKey.pfx</PackageCertificateKeyFile>
 	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-
+		<MauiIcon Include="Resources\AppIcon\summoner_logo_shaded.png" />
+		
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
@@ -64,5 +64,14 @@
 	  <ProjectReference Include="..\GravyVrc.Summoner.Nfc\GravyVrc.Summoner.Nfc.csproj" />
 	</ItemGroup>
 
-	<Target Name="_GenerateAppxPackage" Condition="'$(AppxPackage)' == 'true'" />
+	<ItemGroup>
+	  <MauiPlatformSpecificFolder Remove="Platforms\Android\" />
+	  <MauiPlatformSpecificFolder Remove="Platforms\iOS\" />
+	  <MauiPlatformSpecificFolder Remove="Platforms\MacCatalyst\" />
+	  <MauiPlatformSpecificFolder Remove="Platforms\Tizen\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\AppIcon\summoner_logo_shaded.png" />
+	</ItemGroup>
 </Project>
