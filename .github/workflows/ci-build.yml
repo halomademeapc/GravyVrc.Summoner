@@ -2,7 +2,7 @@ name: CI Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pipeline ]
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
@@ -29,6 +29,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Write key file
+        env:
+          AUTH: ${{ secrets.PFX }}
+        run: |
+          echo "$AUTH" > src/GravyVrc.Summoner/cert.base64
+          certutil -decode src/GravyVrc.Summoner/cert.base64 src/GravyVrc.Summoner/GravyVrc.Summoner.UI_TemporaryKey.pfx
+          pwd
+          ls
+
       - name: Setup .NET 7
         uses: actions/setup-dotnet@v2
         with:
@@ -47,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mauibeach-windows-ci-build
-          path: src/MauiBeach/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/GravyVrc*/GravyVrc*.msix
+          path: src/GravyVrc.Summoner/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/GravyVrc*/GravyVrc*.msix
