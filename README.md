@@ -22,10 +22,15 @@ You can also head to the [releases](https://github.com/halomademeapc/GravyVrc.Su
 
 ## Usage
 ![image](https://github.com/halomademeapc/GravyVrc.Summoner/assets/5904472/d33a4426-c59e-4db3-a92a-810ef4432c75)
+
 Click **Add Parameter** to add parameters to set on your avatar anytime the tag is scanned while the app is open.  
+
 ![image](https://github.com/halomademeapc/GravyVrc.Summoner/assets/5904472/2d8e5483-2eaf-40b9-91d0-4d7f8af46e4e)
+
 Parameters can be a integer, float, or boolean type.
+
 ![image](https://github.com/halomademeapc/GravyVrc.Summoner/assets/5904472/f31216f2-c4bc-45d2-8a72-148f8131b691)
+
 The **Write Tag** button will be enabled if all parameters are valid and a tag is detected on a compatible reader.  You can also use the **Set Value** button to test your parameters without overwriting a tag or without a tag present.  Be aware that placing a tag on the scanner will load its values into the UI so make sure you place the tag down before you start making your edits otherwise they may be lost.
 
 ## Technical Bits
