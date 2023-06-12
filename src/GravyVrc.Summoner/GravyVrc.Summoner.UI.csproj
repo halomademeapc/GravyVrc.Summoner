@@ -24,12 +24,12 @@
 		<Company>GravyVRC</Company>
 		<Product>Summoner</Product>
 	  <ApplicationTitle>GravyVRC Summoner</ApplicationTitle>
-	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
 	  <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
-	  <GenerateTestArtifacts>False</GenerateTestArtifacts>
+	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
+	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-	  <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+	  <PackageCertificateKeyFile>GravyVrc.Summoner.UI_TemporaryKey.pfx</PackageCertificateKeyFile>
 	  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 	  <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 	</PropertyGroup>
@@ -73,9 +73,5 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\AppIcon\summoner_logo_shaded.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <MauiIcon Include="Resources\AppIcon\summoner_logo_shaded.png" />
 	</ItemGroup>
 </Project>
