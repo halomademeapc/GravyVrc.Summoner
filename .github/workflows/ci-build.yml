@@ -51,10 +51,7 @@ jobs:
         run: dotnet restore src/GravyVrc.Summoner/GravyVrc.Summoner.UI.csproj
 
       - name: Build MAUI Windows
-        run: dotnet publish src/GravyVrc.Summoner/GravyVrc.Summoner.UI.csproj -c Release -f net7.0-windows10.0.19041.0 --no-restore -p:PublishReadyToRun=false /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint=$GENERATEDTHUMBPRINT
+        run: dotnet build
 
-      - name: Upload Windows Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: mauibeach-windows-ci-build
-          path: src/GravyVrc.Summoner/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/GravyVrc*/GravyVrc*.msix
+      - name: Run Tests
+        run: dotnet test
