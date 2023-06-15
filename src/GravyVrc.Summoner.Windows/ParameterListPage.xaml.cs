@@ -126,8 +126,7 @@ public partial class ParameterListPage : Page
         try
         {
             _nfcSummoner.WriteTag(ViewModel.Collection.Select(v => v.GetAssignment()).ToList(), _readerName);
-            //var toast = Toast.Make("NFC tag was written successfully!");
-            //toast.Show();
+            ToastHelper.Show("NFC tag was written successfully!");
         }
         catch
         {

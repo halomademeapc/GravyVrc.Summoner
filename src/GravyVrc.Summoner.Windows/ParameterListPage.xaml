@@ -8,23 +8,6 @@
     <Page.DataContext>
         <viewModels:ParameterListViewModel x:Name="ViewModel" />
     </Page.DataContext>
-    <!-- <Shell.TitleView> -->
-    <!--     <Grid ColumnDefinitions="*,Auto" -->
-    <!--           ColumnSpacing="12" -->
-    <!--           Padding="10,0"> -->
-    <!--         <Label Grid.Column="0" -->
-    <!--                Text="Summoner" -->
-    <!--                FontSize="Large" /> -->
-    <!--         <ImageButton Grid.Column="1" -->
-    <!--                      Aspect="Center" -->
-    <!--                      Padding="2" -->
-    <!--                      Source="{fluent:Icon Icon=Info28, IconSize=20 }" -->
-    <!--                      ToolTipProperties.Text="About" -->
-    <!--                      Clicked="OnAboutClicked" -->
-    <!--                      HorizontalOptions="Center" -->
-    <!--                      VerticalOptions="Center" /> -->
-    <!--     </Grid> -->
-    <!-- </Shell.TitleView> -->
     <Grid RowDefinitions="Auto,*">
         <ScrollViewer Grid.Row="1">
             <Grid

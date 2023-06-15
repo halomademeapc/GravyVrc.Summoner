@@ -10,6 +10,7 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
+    <ApplicationIcon>Resources\AppIcon\summoner_logo_shaded.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Images\enable_osc.jpg" />
@@ -22,8 +23,8 @@
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Resources\AppIcon\summoner_logo_shaded.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,14 +58,6 @@
   <ItemGroup>
     <ProjectReference Include="..\GravyVrc.Summoner.Core\GravyVrc.Summoner.Core.csproj" />
     <ProjectReference Include="..\GravyVrc.Summoner.Nfc\GravyVrc.Summoner.Nfc.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <MauiIcon Include="Resources\AppIcon\summoner_logo_shaded.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <MauiImage Include="Resources\Images\enable_osc.jpg" />
-    <MauiImage Include="Resources\Images\summoner_logo_flat.png" />
-    <MauiImage Include="Resources\Images\summoner_logo_shaded.png" />
   </ItemGroup>
 
   <!-- 
