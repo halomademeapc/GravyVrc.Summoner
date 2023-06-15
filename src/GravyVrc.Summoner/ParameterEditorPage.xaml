@@ -2,7 +2,7 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:GravyVrc.Summoner.Core;assembly=GravyLink.Summoner.Core"
+             xmlns:local="clr-namespace:GravyVrc.Summoner.Core;assembly=GravyVrc.Summoner.Core"
              xmlns:fluent="clr-namespace:MauiIcons.Fluent;assembly=MauiIcons.Fluent"
              xmlns:summoner="using:GravyVrc.Summoner"
              x:Class="GravyVrc.Summoner.ParameterEditorPage">
