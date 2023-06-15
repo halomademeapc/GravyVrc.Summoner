@@ -7,8 +7,9 @@
         <StackPanel Orientation="Vertical"
                     Padding="10">
             <Image
-                Source="summoner_logo_shaded.png"
+                Source="Resources/Images/summoner_logo_shaded.png"
                 MaxHeight="200"
+                Height="140"
                 HorizontalAlignment="Center" />
             <TextBlock
                 Text="GravyVRC Summoner"
@@ -19,11 +20,13 @@
                        HorizontalTextAlignment="Center" />
             <TextBlock
                 Text="Made with 💖 by Alex Griffith"
+                TextWrapping="WrapWholeWords"
                 HorizontalTextAlignment="Center"
                 Margin="0,16" />
             <TextBlock
                 Text="This software does not collect any personal information and is provided as-is."
                 HorizontalTextAlignment="Center"
+                TextWrapping="WrapWholeWords"
                 Margin="0,16" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

@@ -56,6 +56,7 @@ public class ParameterViewModel : INotifyPropertyChanged
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
         OnPropertyChanged(propertyName);
+        OnPropertyChanged(nameof(Value));
         return true;
     }
 

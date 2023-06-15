@@ -33,6 +33,11 @@ public partial class ParameterListPage : Page
         _nfcSummoner.StartListening();
     }
 
+    private void ConfigureTitleBar()
+    {
+        
+    }
+
     private void OnReaderReady(ReaderReadyArgs args)
     {
         _readerName = args.ReaderName;
@@ -183,13 +188,14 @@ public partial class ParameterListPage : Page
         base.OnNavigatedTo(e);
     }
 
-    private void OnAboutClicked(object sender, EventArgs e)
+    private void OnAboutClicked(object sender, RoutedEventArgs routedEventArgs)
     {
         var dialog = new ContentDialog
         {
-            Title = "Edit Parameter",
-            Content = new AboutPage()
+            Content = new AboutPage(),
+            CloseButtonText = "Dismiss"
         };
+        dialog.XamlRoot = Content.XamlRoot;
         dialog.ShowAsync();
     }
 }

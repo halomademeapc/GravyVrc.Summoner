@@ -29,6 +29,9 @@ namespace GravyVrc.Summoner.Windows
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.Navigate(typeof(ParameterListPage));
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(TitleBar);
         }
     }
 }
