@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GravyVrc.Summoner.Windows (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "GravyVrc.Summoner.Windows (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

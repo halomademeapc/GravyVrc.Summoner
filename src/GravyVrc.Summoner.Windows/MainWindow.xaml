@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Window
+    x:Class="GravyVrc.Summoner.Windows.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Window.Content>
+        <Grid RowDefinitions="Auto,*">
+            <Grid x:Name="TitleBar"
+                  Grid.Row="0"
+                  ColumnSpacing="8"
+                  ColumnDefinitions="Auto,*"
+                  HorizontalAlignment="Stretch"
+                  Height="28"
+                  Padding="4">
+                <Image Grid.Column="0"
+                       Source="Resources/Images/summoner_logo_shaded.png"
+                       Height="24"
+                       VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1"
+                           Text="Summoner"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Center"
+                           FontSize="14" />
+            </Grid>
+            <Frame Grid.Row="1"
+                   x:Name="MainFrame" />
+        </Grid>
+    </Window.Content>
+</Window>
