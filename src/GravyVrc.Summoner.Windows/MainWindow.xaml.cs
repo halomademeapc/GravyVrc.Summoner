@@ -14,10 +14,10 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
         MainFrame.Navigate(typeof(ParameterListPage));
-        ExtendsContentIntoTitleBar = true;
-        SetTitleBar(TitleBar);
         try
         {
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(TitleBar);
             this.Resize(400, 800);
         }
         catch { }

@@ -4,6 +4,7 @@ using Microsoft.UI.Windowing;
 using Window = Microsoft.UI.Xaml.Window;
 using System.Runtime.InteropServices;
 using System;
+using WinRT.Interop;
 
 namespace GravyVrc.Summoner.Windows.Helpers;
 
@@ -11,7 +12,7 @@ public static class WindowHelpers
 {
     public static void Resize(this Window window, int width, int height)
     {
-        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+        var handle = WindowNative.GetWindowHandle(window);
         var windowId = Win32Interop.GetWindowIdFromWindow(handle);
         var appWindow = AppWindow.GetFromWindowId(windowId);
         var dpi = GetDisplayScaleFactor(handle);
@@ -32,5 +33,12 @@ public static class WindowHelpers
             // Or fallback to GDI solutions above
             return 1;
         }
+    }
+
+    public static AppWindow GetAppWindow(this Window window)
+    {
+        IntPtr hWnd = WindowNative.GetWindowHandle(window);
+        WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+        return AppWindow.GetFromWindowId(wndId);
     }
 }
