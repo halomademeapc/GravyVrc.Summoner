@@ -15,11 +15,11 @@ You should be able to find these easily on your favorite online marketplace.
 ## Installation
 
 ### Microsoft Store
-The easiest way to install summoner is via the Microsoft Store.  
+The easiest way to install Summoner is via the Microsoft Store.  
 [![Get it from the Microsoft Store](https://get.microsoft.com/images/en-US%20dark.svg)](https://apps.microsoft.com/store/detail/9PBSBFXXP0DF?launch=true&mode=mini)
 
 ### Manual Installation
-You can also head to the [releases](https://github.com/halomademeapc/GravyVrc.Summoner/releases) page and download the latest build from there. GitHub builds are self-signed so you will need to [import the certificate](https://www.advancedinstaller.com/install-test-certificate-from-msix.html) to install the app. 
+You can also head to the [releases](https://github.com/halomademeapc/GravyVrc.Summoner/releases) page and download non-packaged builds for your platform from there.
 
 ## Usage
 ![image](https://github.com/halomademeapc/GravyVrc.Summoner/assets/5904472/d33a4426-c59e-4db3-a92a-810ef4432c75)
@@ -36,7 +36,7 @@ The **Write Tag** button will be enabled if all parameters are valid and a tag i
 
 ## Technical Bits
 ### Libraries
-Summoner's UI is built on MAUI with .NET 7.  The app talks to your NFC reader using [pcsc-sharp](https://github.com/danm-de/pcsc-sharp) and to VRChat via [VRCOscLib](https://github.com/ChanyaVRC/VRCOscLib).  Data is serialized using [MessagePack](https://github.com/neuecc/MessagePack-CSharp).
+Summoner's UI is built on Windows App SDK + WinUI 3 with .NET 6.  The app talks to your NFC reader using [pcsc-sharp](https://github.com/danm-de/pcsc-sharp) and to VRChat via [VRCOscLib](https://github.com/ChanyaVRC/VRCOscLib).  Data is serialized using [MessagePack](https://github.com/neuecc/MessagePack-CSharp).
 
 ### Data Format
 Data is stored on the tags in 4-byte blocks using the following arrangement:
@@ -45,3 +45,9 @@ Data is stored on the tags in 4-byte blocks using the following arrangement:
 | 4     | Identifying Signature |
 | 5     | Content Size Header   |
 | 6..   | Serialized Content    |
+
+### Utility Parameters
+Summoner sets a couple of parameters in addition to what you specify in the UI that you can use to drive animations.
+
+**Gv/Summoner/Triggered**: Switches to `true` for 100ms anytime Summoner sets a value.
+**Gv/Summoner/Present**: Set to `true` while an NFC tag is detected on your reader.
