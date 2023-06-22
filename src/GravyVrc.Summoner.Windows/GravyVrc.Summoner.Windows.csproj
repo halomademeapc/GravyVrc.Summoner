@@ -44,8 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230217.4" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
+	  <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230602002" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <Manifest Include="$(ApplicationManifest)" />
     <PackageReference Include="VRCOscLib" Version="1.4.3" />
   </ItemGroup>
@@ -57,14 +57,6 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Helpers\WindowHelpers.cs">
-      <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
-    </Compile>
-    <Compile Update="Helpers\WindowsSystemDispatcherQueueHelper.cs">
-      <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GravyVrc.Summoner.Core\GravyVrc.Summoner.Core.csproj" />

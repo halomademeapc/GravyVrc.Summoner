@@ -15,10 +15,11 @@ You should be able to find these easily on your favorite online marketplace.
 ## Installation
 
 ### Microsoft Store
-The easiest way to install summoner is via the Microsoft Store (link coming soon).  
+The easiest way to install summoner is via the Microsoft Store.  
+![[Get it from the Microsoft Store](https://apps.microsoft.com/store/detail/9PBSBFXXP0DF?launch=true&mode=mini)](https://get.microsoft.com/images/en-US%20dark.svg)
 
 ### Manual Installation
-You can also head to the [releases](https://github.com/halomademeapc/GravyVrc.Summoner/releases) page and download the latest build from there. GitHub builds are self-signed so you will need to [import the certificate](https://www.advancedinstaller.com/install-test-certificate-from-msix.html) to install the app. 
+You can also head to the [releases](https://github.com/halomademeapc/GravyVrc.Summoner/releases) page and download unpackaged builds from there for your platform.
 
 ## Usage
 ![image](https://github.com/halomademeapc/GravyVrc.Summoner/assets/5904472/d33a4426-c59e-4db3-a92a-810ef4432c75)
