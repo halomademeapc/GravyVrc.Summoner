@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BuildSoft.VRChat.Osc;
+﻿using BuildSoft.VRChat.Osc;
 using GravyVrc.Summoner.Core;
 using GravyVrc.Summoner.Nfc;
 using GravyVrc.Summoner.Windows.Helpers;
@@ -10,12 +6,16 @@ using GravyVrc.Summoner.Windows.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GravyVrc.Summoner.Windows;
 
 public partial class ParameterListPage : Page
 {
-    private readonly NfcSummoner _nfcSummoner = new();
+    private readonly NfcSummoner _nfcSummoner;
     private string _readerName = null;
 
     private const string TriggerParameterName = "Gv/Summoner/Triggered";
@@ -27,15 +27,18 @@ public partial class ParameterListPage : Page
     {
         InitializeComponent();
         ViewModel.PropertyChanged += (_, _) => OnViewModelChange();
-        _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
-        _nfcSummoner.ReaderReady += OnReaderReady;
+        try
+        {
+            _nfcSummoner = new();
+            _nfcSummoner.ParameterTagScanned += OnNfcTagScanned;
+            _nfcSummoner.ReaderReady += OnReaderReady;
+            _nfcSummoner.StartListening();
+        }
+        catch (Exception e)
+        {
+            DebugMessage(e.Message);
+        }
         OnViewModelChange();
-        _nfcSummoner.StartListening();
-    }
-
-    private void ConfigureTitleBar()
-    {
-        
     }
 
     private void OnReaderReady(ReaderReadyArgs args)
@@ -198,5 +201,27 @@ public partial class ParameterListPage : Page
         };
         dialog.XamlRoot = Content.XamlRoot;
         dialog.ShowAsync();
+    }
+
+    public void DebugMessage(string message)
+    {
+        try
+        {
+
+            this.RunOnUiThread(() =>
+            {
+                try
+                {
+                    var dialog = new ContentDialog
+                    {
+                        Content = message
+                    };
+                    dialog.XamlRoot = Content.XamlRoot;
+                    dialog.ShowAsync();
+                }
+                catch { }
+            });
+        }
+        catch { }
     }
 }
