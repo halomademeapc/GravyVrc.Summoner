@@ -7,10 +7,21 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+	  <EnableMsixTooling>true</EnableMsixTooling>
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <ApplicationIcon>Resources\AppIcon\summoner_logo_shaded.ico</ApplicationIcon>
+	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+	  <AssemblyVersion>1.1.0.0</AssemblyVersion>
+	  <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+	  <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+	  <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+	  <GenerateTestArtifacts>True</GenerateTestArtifacts>
+	  <AppxBundle>Always</AppxBundle>
+	  <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
+	  <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+	  <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Images\enable_osc.jpg" />
@@ -68,4 +79,10 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+
+    <Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
+	    <ItemGroup>
+		    <FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="$([System.String]::Copy('%(FrameworkSdkReference.SDKName)').StartsWith('Microsoft.WindowsAppRuntime.'))" />
+	    </ItemGroup>
+    </Target>
 </Project>
