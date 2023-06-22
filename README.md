@@ -2,8 +2,9 @@
 # GravyVRC Summoner
 Control your VRChat avatar with NFC tags!
 
-
-![Main Build](https://github.com/halomademeapc/GravyVrc.Summoner/actions/workflows/ci-build.yml/badge.svg)
+[![Windows Store](https://img.shields.io/endpoint?url=https%3A%2F%2Fmicrosoft-store-badge.fly.dev%2Fapi%2Frating%3FstoreId%3D9PBSBFXXP0DF%26market%3DUS&style=flat&label=Windows+Store&color=blueviolet&logo=Windows)](https://www.microsoft.com/store/productId/9PBSBFXXP0DF)
+![Release Build](https://github.com/halomademeapc/GravyVrc.Summoner/actions/workflows/ci-release.yml/badge.svg)
+![Test Build](https://github.com/halomademeapc/GravyVrc.Summoner/actions/workflows/ci-build.yml/badge.svg)
 
 ## Hardware
 Summoner was developed against this hardware.  I cannot guaruntee compatibility with other scanners/tags.
