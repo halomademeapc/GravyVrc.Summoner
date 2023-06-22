@@ -2,7 +2,6 @@ name: CI Release
 
 on:
   push:
-    branches: [ pipeline ]
     tags:
     - '*'
 
@@ -132,4 +131,3 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "*.zip"
-          tag: 'test'
