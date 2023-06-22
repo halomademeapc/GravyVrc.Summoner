@@ -146,6 +146,7 @@ public partial class ParameterListPage : Page
         var model = new ParameterViewModel();
         ViewModel.Collection.Add(model);
         OpenEditor(model);
+        OnViewModelChange();
     }
 
     private async void OpenEditor(ParameterViewModel model)
@@ -161,6 +162,7 @@ public partial class ParameterListPage : Page
         };
         control.Initialize(dialog);
         await dialog.ShowAsync();
+        dialog.Closed += (_, _) => this.RunOnUiThread(OnViewModelChange);
     }
 
     private void OnRemoveClicked(object sender, RoutedEventArgs routedEventArgs)
