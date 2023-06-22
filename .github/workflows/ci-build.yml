@@ -20,38 +20,82 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true       # Disable sending .NET CLI telemetry
 
 jobs:
-# MAUI Windows Build
-  build-windows:
+  test:
     runs-on: windows-2022
-    name: Windows Build
+    name: Test
     steps:
-
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Write key file
-        env:
-          AUTH: ${{ secrets.PFX }}
-        shell: pwsh
-        run: |
-          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=E4F8F4A4-9089-461E-B691-CEC5470BA7DA" -KeyUsage DigitalSignature -FriendlyName "GitHub Actions Self-Signed Cert" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
-          $password = ConvertTo-SecureString -String "thisdoesnotmatter" -Force -AsPlainText 
-          Export-PfxCertificate -cert $cert -FilePath "src/GravyVrc.Summoner/GravyVrc.Summoner.UI_TemporaryKey.pfx" -Password $password
-          $thumbprint = $cert.Thumbprint
-          Add-Content -Path $env:GITHUB_ENV -Value "GENERATEDTHUMBPRINT=$thumbprint"
-      - name: Setup .NET 7
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 7.0.x
-
-      - name: Install MAUI Workload
-        run: dotnet workload install maui --ignore-failed-sources
-
+          dotnet-version: 6.0.x
       - name: Restore Dependencies
-        run: dotnet restore src/GravyVrc.Summoner/GravyVrc.Summoner.UI.csproj
-
-      - name: Build MAUI Windows
+        run: dotnet restore
+      - name: Build
         run: dotnet build
-
       - name: Run Tests
         run: dotnet test
+  build-x64:
+    runs-on: windows-2022
+    name: Build x64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Deploy
+        run: dotnet publish src\GravyVrc.Summoner.Windows\GravyVrc.Summoner.Windows.csproj /p:DeployOnBuild=true /p:PublishProfile=src\GravyVrc.Summoner.Windows\Properties\PublishProfiles\win10-x64.pubxml /p:WindowsPackageType=None /p:Configuration=Release /p:Platform=x64
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          filename: 'x64.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+  build-x86:
+    runs-on: windows-2022
+    name: Build x86
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Deploy
+        run: dotnet publish src\GravyVrc.Summoner.Windows\GravyVrc.Summoner.Windows.csproj /p:DeployOnBuild=true /p:PublishProfile=src\GravyVrc.Summoner.Windows\Properties\PublishProfiles\win10-x86.pubxml /p:WindowsPackageType=None /p:Configuration=Release /p:Platform=x86
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          filename: 'x86.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+  build-arm64:
+    runs-on: windows-2022
+    name: Build arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Deploy
+        run: dotnet publish src\GravyVrc.Summoner.Windows\GravyVrc.Summoner.Windows.csproj /p:DeployOnBuild=true /p:PublishProfile=src\GravyVrc.Summoner.Windows\Properties\PublishProfiles\win10-arm64.pubxml /p:WindowsPackageType=None /p:Configuration=Release /p:Platform=arm64
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          filename: 'arm64.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
