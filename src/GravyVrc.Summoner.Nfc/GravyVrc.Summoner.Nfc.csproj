@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GravyLink.Summoner.Core\GravyLink.Summoner.Core.csproj" />
+    <ProjectReference Include="..\GravyVrc.Summoner.Core\GravyVrc.Summoner.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
