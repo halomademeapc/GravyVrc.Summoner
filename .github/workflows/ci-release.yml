@@ -2,6 +2,7 @@ name: CI Release
 
 on:
   push:
+    branches: [ pipeline ]
     tags:
     - '*'
 
@@ -49,13 +50,12 @@ jobs:
         with:
           type: 'zip'
           directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x64\publish'
-          filename: 'x64.zip'
+          filename: x64.zip
           exclusions: '*.git* /*node_modules/* .editorconfig'
-      - name: Upload Release
-        uses: ncipollo/release-action@v1.12.0
+      - uses: actions/upload-artifact@v2
         with:
-          artifacts: "x64.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: x64.zip
+          path: x64.zip
   build-x86:
     runs-on: windows-2022
     name: Build x86
@@ -77,11 +77,10 @@ jobs:
           directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x86\publish'
           filename: 'x86.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
-      - name: Upload Release
-        uses: ncipollo/release-action@v1.12.0
+      - uses: actions/upload-artifact@v2
         with:
-          artifacts: "x86.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: x86.zip
+          path: x86.zip
   build-arm64:
     runs-on: windows-2022
     name: Build arm64
@@ -103,8 +102,28 @@ jobs:
           directory: 'src\GravyVrc.Summoner.Windows\bin\win10-arm64\publish'
           filename: 'arm64.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
-      - name: Upload Release
-        uses: ncipollo/release-action@v1.12.0
+      - uses: actions/upload-artifact@v2
         with:
-          artifacts: "arm64.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: arm64.zip
+          path: arm64.zip
+  publish-artifacts:
+    runs-on: windows-2022
+    name: Upload artifacts
+    needs:
+      - build-x64
+      - build-x86
+      - build-arm64
+    steps: 
+      - uses: actions/download-artifact@v2
+        with:
+          name: x64.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: x86.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: arm64.zip
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "*.zip"
+          tag: 'test'
