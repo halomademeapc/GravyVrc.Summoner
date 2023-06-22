@@ -49,10 +49,11 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          path: 'src\GravyVrc.Summoner.Windows\bin\win10-x64\publish'
           filename: x64.zip
           exclusions: '*.git* /*node_modules/* .editorconfig'
       - uses: actions/upload-artifact@v2
+        name: Upload Artifact
         with:
           name: x64.zip
           path: x64.zip
@@ -74,10 +75,11 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x86\publish'
+          path: 'src\GravyVrc.Summoner.Windows\bin\win10-x86\publish'
           filename: 'x86.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
       - uses: actions/upload-artifact@v2
+        name: Upload Artifact
         with:
           name: x86.zip
           path: x86.zip
@@ -99,10 +101,11 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-arm64\publish'
+          path: 'src\GravyVrc.Summoner.Windows\bin\win10-arm64\publish'
           filename: 'arm64.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
       - uses: actions/upload-artifact@v2
+        name: Upload Artifact
         with:
           name: arm64.zip
           path: arm64.zip
@@ -115,12 +118,15 @@ jobs:
       - build-arm64
     steps: 
       - uses: actions/download-artifact@v2
+        name: Download x64 Artifact
         with:
           name: x64.zip
       - uses: actions/download-artifact@v2
+        name: Download x86 Artifact
         with:
           name: x86.zip
       - uses: actions/download-artifact@v2
+        name: Download arm64 Artifact
         with:
           name: arm64.zip
       - uses: ncipollo/release-action@v1
