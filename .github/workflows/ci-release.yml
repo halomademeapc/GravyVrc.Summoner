@@ -1,0 +1,110 @@
+name: CI Release
+
+on:
+  push:
+    tags:
+    - '*'
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_NOLOGO: true                     # Disable the .NET logo
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true # Disable the .NET first time experience
+  DOTNET_CLI_TELEMETRY_OPTOUT: true       # Disable sending .NET CLI telemetry
+
+jobs:
+  test:
+    runs-on: windows-2022
+    name: Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build
+      - name: Run Tests
+        run: dotnet test
+  build-x64:
+    runs-on: windows-2022
+    name: Build x64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Deploy
+        run: dotnet publish src\GravyVrc.Summoner.Windows\GravyVrc.Summoner.Windows.csproj /p:DeployOnBuild=true /p:PublishProfile=src\GravyVrc.Summoner.Windows\Properties\PublishProfiles\win10-x64.pubxml /p:WindowsPackageType=None /p:Configuration=Release /p:Platform=x64
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          filename: 'x64.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "x64.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+  build-x86:
+    runs-on: windows-2022
+    name: Build x86
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Deploy
+        run: dotnet publish src\GravyVrc.Summoner.Windows\GravyVrc.Summoner.Windows.csproj /p:DeployOnBuild=true /p:PublishProfile=src\GravyVrc.Summoner.Windows\Properties\PublishProfiles\win10-x86.pubxml /p:WindowsPackageType=None /p:Configuration=Release /p:Platform=x86
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x86\publish'
+          filename: 'x86.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "x86.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+  build-arm64:
+    runs-on: windows-2022
+    name: Build arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Deploy
+        run: dotnet publish src\GravyVrc.Summoner.Windows\GravyVrc.Summoner.Windows.csproj /p:DeployOnBuild=true /p:PublishProfile=src\GravyVrc.Summoner.Windows\Properties\PublishProfiles\win10-arm64.pubxml /p:WindowsPackageType=None /p:Configuration=Release /p:Platform=arm64
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-arm64\publish'
+          filename: 'arm64.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "arm64.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
