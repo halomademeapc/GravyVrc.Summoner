@@ -54,9 +54,14 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x64\publish'
           filename: 'x64.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "x64.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
   build-x86:
     runs-on: windows-2022
     name: Build x86
@@ -75,9 +80,14 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-x86\publish'
           filename: 'x86.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "x86.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
   build-arm64:
     runs-on: windows-2022
     name: Build arm64
@@ -96,6 +106,11 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'GravyVrc.Summoner.Windows\bin\win10-x64\publish'
+          directory: 'src\GravyVrc.Summoner.Windows\bin\win10-arm64\publish'
           filename: 'arm64.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "arm64.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
