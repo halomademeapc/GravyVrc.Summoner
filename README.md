@@ -16,7 +16,7 @@ You should be able to find these easily on your favorite online marketplace.
 ## Installation
 
 ### Microsoft Store
-The easiest way to install Summoner is via the Microsoft Store.  
+~~The easiest way to install Summoner is via the Microsoft Store.~~ Currently there is an issue where the app crashes instantly when installed from the store. See [#17](https://github.com/halomademeapc/GravyVrc.Summoner/issues/17).
 [![Get it from the Microsoft Store](https://get.microsoft.com/images/en-US%20dark.svg)](https://apps.microsoft.com/store/detail/9PBSBFXXP0DF?launch=true&mode=mini)
 
 ### Manual Installation
